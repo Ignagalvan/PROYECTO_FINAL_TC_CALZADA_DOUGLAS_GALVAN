@@ -1,6 +1,4 @@
-while (x > 0) {
-    break;
-    continue;
+int suma(
+{
+    return 5;
 }
-
-return x;
