@@ -89,6 +89,12 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
+    @Override
+    public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
+        imprimir("LLAMADA FUNCION -> " + ctx.ID().getText() + "()");
+        return null;
+    }
+
     // =========================================================
     //  REGLA: sentenciaCout
     //  Ejemplo: cout << x;
@@ -267,6 +273,15 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
         imprimir("AGRUPADA ( ... )");
         nivel++;
         visit(ctx.expresion());
+        nivel--;
+        return null;
+    }
+
+    @Override
+    public String visitExprLlamadaFuncion(MiLenguajeParser.ExprLlamadaFuncionContext ctx) {
+        imprimir("EXPRESION CON LLAMADA");
+        nivel++;
+        visit(ctx.llamadaFuncion());
         nivel--;
         return null;
     }
