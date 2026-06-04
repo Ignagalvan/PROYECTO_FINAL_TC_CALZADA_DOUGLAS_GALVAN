@@ -28,7 +28,16 @@ grammar MiLenguaje;
 // La regla 'programa' es el punto de entrada del parser.
 // EOF marca el fin del archivo de entrada.
 programa
-    : sentencia* EOF
+    : elemento* EOF
+    ;
+
+elemento
+    : funcion
+    | sentencia
+    ;
+
+funcion
+    : tipo ID PA PC bloque
     ;
 
 // =====================================================================
