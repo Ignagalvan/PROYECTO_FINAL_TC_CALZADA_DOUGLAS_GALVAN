@@ -45,6 +45,9 @@ sentencia
     | sentenciaCout      // cout << x;
     | sentenciaIf        // if (x > 0) { ... }
     | sentenciaWhile     // while (x < 10) { ... }
+    | sentenciaBreak
+    | sentenciaContinue
+    | sentenciaReturn
     | bloque             // { ... }
     ;
 
@@ -96,6 +99,21 @@ sentenciaIf
 // Sintaxis: while (condición) { ... }
 sentenciaWhile
     : WHILE PA expresion PC bloque
+    ;
+
+// agrego sentenciaBreak agrego aca
+sentenciaBreak
+    : BREAK PYC
+    ;
+
+// agrego sentenciaContinue
+sentenciaContinue
+    : CONTINUE PYC
+    ;
+
+//agrego sentenciaReturn
+sentenciaReturn
+    : RETURN expresion? PYC
     ;
 
 // BLOQUE: secuencia de sentencias entre llaves
@@ -270,6 +288,8 @@ FOR    : 'for'    ;     // Para futuras extensiones
 WHILE  : 'while'  ;     // Bucle mientras
 IF     : 'if'     ;     // Selección condicional
 ELSE   : 'else'   ;     // Alternativa del if
+BREAK    : 'break' ;
+CONTINUE : 'continue' ;
 RETURN : 'return' ;     // Para futuras funciones
 
 
