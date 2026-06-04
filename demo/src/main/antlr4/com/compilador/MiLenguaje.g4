@@ -28,16 +28,7 @@ grammar MiLenguaje;
 // La regla 'programa' es el punto de entrada del parser.
 // EOF marca el fin del archivo de entrada.
 programa
-    : elemento* EOF
-    ;
-
-elemento
-    : funcion
-    | sentencia
-    ;
-
-funcion
-    : tipo ID PA PC bloque
+    : sentencia* EOF
     ;
 
 // =====================================================================
@@ -54,6 +45,7 @@ sentencia
     | sentenciaCout      // cout << x;
     | sentenciaIf        // if (x > 0) { ... }
     | sentenciaWhile     // while (x < 10) { ... }
+    | sentenciaFor
     | sentenciaBreak
     | sentenciaContinue
     | sentenciaReturn
@@ -108,6 +100,20 @@ sentenciaIf
 // Sintaxis: while (condición) { ... }
 sentenciaWhile
     : WHILE PA expresion PC bloque
+    ;
+
+// sentenciaFor agrego aca 
+sentenciaFor
+    : FOR PA inicializacionFor PYC expresion PYC actualizacionFor PC bloque
+    ;
+
+inicializacionFor
+    : tipo ID IGUAL expresion
+    | ID IGUAL expresion
+    ;
+
+actualizacionFor
+    : ID IGUAL expresion
     ;
 
 // agrego sentenciaBreak agrego aca
