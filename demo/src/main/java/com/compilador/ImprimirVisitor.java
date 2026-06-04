@@ -104,7 +104,10 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitSentenciaCout(MiLenguajeParser.SentenciaCoutContext ctx) {
         imprimir("COUT <<");
         nivel++;
-        visit(ctx.expresion());
+
+        for (MiLenguajeParser.ExpresionContext expr : ctx.expresion()) {
+            visit(expr);
+        }        
         nivel--;
         return null;
     }

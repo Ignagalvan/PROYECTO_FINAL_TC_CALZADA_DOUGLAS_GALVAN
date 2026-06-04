@@ -37,7 +37,15 @@ elemento
     ;
 
 funcion
-    : tipo ID PA PC bloque
+    : tipo ID PA parametros? PC bloque
+    ;
+
+parametros
+    : parametro (COMA parametro)*
+    ;
+
+parametro
+    : tipo ID
     ;
 
 // =====================================================================
@@ -102,7 +110,7 @@ llamadaFuncion
 // Sintaxis: cout << expresión ;
 // El operador << es "insertar en", viene de C++ streams
 sentenciaCout
-    : COUT SHIFT_L expresion PYC
+    : COUT SHIFT_L expresion (SHIFT_L expresion)* PYC
     ;
 
 // IF-ELSE: selección condicional
