@@ -53,6 +53,12 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAsignacion(MiLenguajeParser.AsignacionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#llamadaFuncion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaCout}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -203,6 +209,13 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprAnd(MiLenguajeParser.ExprAndContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code exprLlamadaFuncion}
+	 * labeled alternative in {@link MiLenguajeParser#expresion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExprLlamadaFuncion(MiLenguajeParser.ExprLlamadaFuncionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code exprCaracter}
 	 * labeled alternative in {@link MiLenguajeParser#expresion}.

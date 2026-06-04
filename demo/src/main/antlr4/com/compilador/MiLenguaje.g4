@@ -58,6 +58,7 @@ sentencia
     | sentenciaBreak
     | sentenciaContinue
     | sentenciaReturn
+    | llamadaFuncion PYC  // suma();
     | bloque             // { ... }
     ;
 
@@ -87,6 +88,14 @@ tipo
 // porque la declaración empieza con un TIPO y esta con un ID.
 asignacion
     : ID IGUAL expresion PYC
+    ;
+
+// LLAMADA A FUNCION SIN PARAMETROS
+// Ejemplos:
+//   saludar();
+//   suma();
+llamadaFuncion
+    : ID PA PC
     ;
 
 // COUT: salida por pantalla
@@ -211,6 +220,9 @@ expresion
     // Paréntesis: agrupan y fuerzan el orden de evaluación
     // (2 + 3) * 4  →  20
     | PA expresion PC                                                     # exprAgrupada
+
+    // Llamada a funcion dentro de una expresion: x = suma();
+    | llamadaFuncion                                                      # exprLlamadaFuncion
 
     // Literales numéricos
     | INTEGER                                                             # exprEntero

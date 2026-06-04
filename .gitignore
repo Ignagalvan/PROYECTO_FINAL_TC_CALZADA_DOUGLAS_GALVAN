@@ -1,3 +1,18 @@
+# Maven / Java build output
 demo/target/
+target/
 *.class
 *.jar
+
+# ANTLR temporary/generated token files outside the package folder
+demo/src/main/java/*.tokens
+demo/src/main/java/*.interp
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
