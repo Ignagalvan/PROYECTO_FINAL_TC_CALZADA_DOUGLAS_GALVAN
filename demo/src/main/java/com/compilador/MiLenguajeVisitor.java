@@ -59,6 +59,42 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaFor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#inicializacionFor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInicializacionFor(MiLenguajeParser.InicializacionForContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#actualizacionFor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitActualizacionFor(MiLenguajeParser.ActualizacionForContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaBreak}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaContinue}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaReturn}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSentenciaReturn(MiLenguajeParser.SentenciaReturnContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#bloque}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
