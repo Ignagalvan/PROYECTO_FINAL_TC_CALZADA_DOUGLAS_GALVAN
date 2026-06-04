@@ -17,6 +17,18 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrograma(MiLenguajeParser.ProgramaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#elemento}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElemento(MiLenguajeParser.ElementoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#funcion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncion(MiLenguajeParser.FuncionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#sentencia}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
