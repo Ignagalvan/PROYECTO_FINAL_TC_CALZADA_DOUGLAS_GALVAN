@@ -1,8 +1,14 @@
 package com.compilador;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
 
     private final GeneradorCodigo generador;
+
+    private final Deque<String> pilaBreak = new ArrayDeque<>();
+    private final Deque<String> pilaContinue = new ArrayDeque<>();
 
     public CodigoVisitor(GeneradorCodigo generador) {
         this.generador = generador;
@@ -108,8 +114,16 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         // Si la condición es falsa, salir del bucle
         generador.emitir("if !" + condicion + " goto " + etiquetaFin);
 
+        // Registrar etiquetas para break y continue dentro de este while
+        pilaBreak.push(etiquetaFin);
+        pilaContinue.push(etiquetaInicio);
+
         // Cuerpo del while
         visit(ctx.bloque());
+
+        // Salir del contexto del while
+        pilaBreak.pop();
+        pilaContinue.pop();
 
         // Volver a evaluar la condición
         generador.emitir("goto " + etiquetaInicio);
@@ -120,7 +134,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         return null;
     }
 
-        // =========================================================
+    // =========================================================
     // SENTENCIA FOR
     // Ejemplo:
     // for (int i = 0; i < 10; i = i + 1) { ... }
@@ -128,6 +142,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     @Override
     public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
         String etiquetaInicio = generador.nuevaEtiqueta();
+        String etiquetaActualizacion = generador.nuevaEtiqueta();
         String etiquetaFin = generador.nuevaEtiqueta();
 
         // 1. Inicialización del for
@@ -144,11 +159,20 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         // 4. Si la condición es falsa, salir del for
         generador.emitir("if !" + condicion + " goto " + etiquetaFin);
 
+        // Registrar etiquetas para break y continue dentro de este for
+        pilaBreak.push(etiquetaFin);
+        pilaContinue.push(etiquetaActualizacion);
+
         // 5. Cuerpo del for
         visit(ctx.bloque());
 
+        // Salir del contexto del for
+        pilaBreak.pop();
+        pilaContinue.pop();
+
         // 6. Actualización
-        // Ejemplo: i = i + 1
+        // Si aparece un continue dentro del for, salta acá
+        generador.emitir(etiquetaActualizacion + ":");
         visit(ctx.actualizacionFor());
 
         // 7. Volver al inicio
@@ -245,6 +269,54 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     // =========================================================
+    // SENTENCIA COUT
+    // Ejemplos:
+    // cout << x;
+    // cout << "Valor: " << x;
+    // =========================================================
+    @Override
+    public String visitSentenciaCout(MiLenguajeParser.SentenciaCoutContext ctx) {
+        for (MiLenguajeParser.ExpresionContext expresion : ctx.expresion()) {
+            String valor = visit(expresion);
+            generador.emitir("print " + valor);
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA BREAK
+    // Ejemplo:
+    // break;
+    // =========================================================
+    @Override
+    public String visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
+        if (pilaBreak.isEmpty()) {
+            generador.emitir("// error: break fuera de un bucle");
+        } else {
+            generador.emitir("goto " + pilaBreak.peek());
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA CONTINUE
+    // Ejemplo:
+    // continue;
+    // =========================================================
+    @Override
+    public String visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
+        if (pilaContinue.isEmpty()) {
+            generador.emitir("// error: continue fuera de un bucle");
+        } else {
+            generador.emitir("goto " + pilaContinue.peek());
+        }
+
+        return null;
+    }
+
+    // =========================================================
     // SENTENCIA GENÉRICA
     // Se usa para detectar llamadas a función como sentencia.
     // Ejemplo:
@@ -258,10 +330,10 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
             generador.emitir("call " + nombreFuncion);
             return null;
         }
-    
+
         return visitChildren(ctx);
     }
-    
+
     // =========================================================
     // LLAMADA A FUNCIÓN DENTRO DE UNA EXPRESIÓN
     // Ejemplo:
@@ -272,7 +344,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitExprLlamadaFuncion(MiLenguajeParser.ExprLlamadaFuncionContext ctx) {
         return visit(ctx.llamadaFuncion());
     }
-    
+
     // =========================================================
     // LLAMADA A FUNCIÓN
     // Cuando la llamada se usa como expresión, guarda el resultado
@@ -286,10 +358,10 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     @Override
     public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
         String nombreFuncion = ctx.ID().getText();
-    
+
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = call " + nombreFuncion);
-    
+
         return temporal;
     }
 
@@ -460,19 +532,19 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         return temporal;
     }
 
-        // =========================================================
-        // EXPRESIÓN NEGATIVA
-        // Ejemplo:
-        // -x
-        // -(a + b)
-        // =========================================================
-        @Override
-        public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
-            String valor = visit(ctx.expresion());
+    // =========================================================
+    // EXPRESIÓN NEGATIVA
+    // Ejemplo:
+    // -x
+    // -(a + b)
+    // =========================================================
+    @Override
+    public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
+        String valor = visit(ctx.expresion());
 
-            String temporal = generador.nuevaTemporal();
-            generador.emitir(temporal + " = -" + valor);
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = -" + valor);
 
-            return temporal;
-        }
+        return temporal;
     }
+}
