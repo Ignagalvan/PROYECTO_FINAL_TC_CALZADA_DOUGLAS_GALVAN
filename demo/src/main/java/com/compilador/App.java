@@ -175,6 +175,11 @@ public class App {
 
             System.out.println("Analisis sintactico completado sin errores.");
 
+
+
+
+
+
             System.out.println("\n=== FASE 3: ANALISIS SEMANTICO ===\n");
 
             SymbolTable symbolTable = new SymbolTable();
@@ -200,6 +205,10 @@ public class App {
 
             System.out.println("Analisis semantico completado sin errores.");
 
+
+
+            
+
             System.out.println("\n=== FASE 4: GENERACION DE CODIGO INTERMEDIO ===");
 
             GeneradorCodigo generadorCodigo = new GeneradorCodigo();
@@ -211,6 +220,10 @@ public class App {
 
             System.out.println("\n" + "=".repeat(65));
             System.out.println("  Compilacion exitosa.");
+
+
+
+
 
             // =========================================================
             // VISUALIZADOR GRÁFICO (Swing)
@@ -233,6 +246,11 @@ public class App {
             e.printStackTrace();
         }
     }
+
+
+
+
+    
 
     // =========================================================
     // ÁRBOL VISUAL — métodos auxiliares
