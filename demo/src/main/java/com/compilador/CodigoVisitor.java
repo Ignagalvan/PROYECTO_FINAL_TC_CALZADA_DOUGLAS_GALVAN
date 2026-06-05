@@ -46,6 +46,50 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     // =========================================================
+    // SENTENCIA IF / IF-ELSE
+    // Ejemplos:
+    // if (x > y) { ... }
+    // if (x > y) { ... } else { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
+        String condicion = visit(ctx.expresion());
+    
+        boolean tieneElse = ctx.bloque().size() > 1;
+    
+        if (tieneElse) {
+            String etiquetaElse = generador.nuevaEtiqueta();
+            String etiquetaFin = generador.nuevaEtiqueta();
+        
+            generador.emitir("if !" + condicion + " goto " + etiquetaElse);
+        
+            // Bloque del IF
+            visit(ctx.bloque(0));
+        
+            generador.emitir("goto " + etiquetaFin);
+        
+            // Bloque del ELSE
+            generador.emitir(etiquetaElse + ":");
+            visit(ctx.bloque(1));
+        
+            // Fin del IF-ELSE
+            generador.emitir(etiquetaFin + ":");
+        } else {
+            String etiquetaFin = generador.nuevaEtiqueta();
+        
+            generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+        
+            // Bloque del IF
+            visit(ctx.bloque(0));
+        
+            // Fin del IF
+            generador.emitir(etiquetaFin + ":");
+        }
+    
+        return null;
+    }
+
+    // =========================================================
     // EXPRESIONES LITERALES Y VARIABLES
     // Estos no generan instrucciones, solo devuelven su texto.
     // =========================================================
@@ -156,13 +200,13 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         String izquierda = visit(ctx.expresion(0));
         String derecha = visit(ctx.expresion(1));
         String operador = ctx.getChild(1).getText();
-    
+
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
-    
+
         return temporal;
     }
-    
+
     // =========================================================
     // EXPRESIÓN AND
     // Ejemplo:
@@ -172,13 +216,13 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitExprAnd(MiLenguajeParser.ExprAndContext ctx) {
         String izquierda = visit(ctx.expresion(0));
         String derecha = visit(ctx.expresion(1));
-    
+
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = " + izquierda + " && " + derecha);
-    
+
         return temporal;
     }
-    
+
     // =========================================================
     // EXPRESIÓN OR
     // Ejemplo:
@@ -188,13 +232,13 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitExprOr(MiLenguajeParser.ExprOrContext ctx) {
         String izquierda = visit(ctx.expresion(0));
         String derecha = visit(ctx.expresion(1));
-    
+
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = " + izquierda + " || " + derecha);
-    
+
         return temporal;
     }
-    
+
     // =========================================================
     // EXPRESIÓN NOT
     // Ejemplo:
@@ -204,13 +248,13 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     @Override
     public String visitExprNot(MiLenguajeParser.ExprNotContext ctx) {
         String valor = visit(ctx.expresion());
-    
+
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = !" + valor);
-    
+
         return temporal;
     }
-    
+
         // =========================================================
         // EXPRESIÓN NEGATIVA
         // Ejemplo:
@@ -220,10 +264,10 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         @Override
         public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
             String valor = visit(ctx.expresion());
-        
+
             String temporal = generador.nuevaTemporal();
             generador.emitir(temporal + " = -" + valor);
-        
+
             return temporal;
         }
     }

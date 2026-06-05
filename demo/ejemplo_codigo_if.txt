@@ -1,0 +1,19 @@
+int x = 10;
+int y = 5;
+int resultado = 0;
+
+if (x > y) {
+    resultado = 1;
+}
+
+if (x < y) {
+    resultado = 2;
+} else {
+    resultado = 3;
+}
+
+if (x > y && y != 0) {
+    resultado = resultado + 10;
+} else {
+    resultado = resultado - 10;
+}
