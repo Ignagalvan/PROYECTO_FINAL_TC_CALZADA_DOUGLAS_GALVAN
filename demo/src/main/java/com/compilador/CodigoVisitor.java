@@ -1,0 +1,145 @@
+package com.compilador;
+
+public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
+
+    private final GeneradorCodigo generador;
+
+    public CodigoVisitor(GeneradorCodigo generador) {
+        this.generador = generador;
+    }
+
+    // =========================================================
+    // DECLARACIONES
+    // Ejemplo:
+    // int x = 5;
+    // int y = a + b;
+    // =========================================================
+    @Override
+    public String visitDeclaracion(MiLenguajeParser.DeclaracionContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+
+        // Si la declaración tiene inicialización, generamos código.
+        if (ctx.expresion() != null) {
+            String valor = visit(ctx.expresion());
+            generador.emitir(nombreVariable + " = " + valor);
+        } else {
+            // Para declaraciones sin valor inicial, dejamos una instrucción clara.
+            generador.emitir("declare " + ctx.tipo().getText() + " " + nombreVariable);
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // ASIGNACIONES
+    // Ejemplo:
+    // x = a + b * c;
+    // =========================================================
+    @Override
+    public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+        String valor = visit(ctx.expresion());
+
+        generador.emitir(nombreVariable + " = " + valor);
+
+        return null;
+    }
+
+    // =========================================================
+    // EXPRESIONES LITERALES Y VARIABLES
+    // Estos no generan instrucciones, solo devuelven su texto.
+    // =========================================================
+
+    @Override
+    public String visitExprEntero(MiLenguajeParser.ExprEnteroContext ctx) {
+        return ctx.INTEGER().getText();
+    }
+
+    @Override
+    public String visitExprDecimal(MiLenguajeParser.ExprDecimalContext ctx) {
+        return ctx.DECIMAL().getText();
+    }
+
+    @Override
+    public String visitExprCaracter(MiLenguajeParser.ExprCaracterContext ctx) {
+        return ctx.CHARACTER().getText();
+    }
+
+    @Override
+    public String visitExprCadena(MiLenguajeParser.ExprCadenaContext ctx) {
+        return ctx.CADENA().getText();
+    }
+
+    @Override
+    public String visitExprVerdadero(MiLenguajeParser.ExprVerdaderoContext ctx) {
+        return "true";
+    }
+
+    @Override
+    public String visitExprFalso(MiLenguajeParser.ExprFalsoContext ctx) {
+        return "false";
+    }
+
+    @Override
+    public String visitExprIdentificador(MiLenguajeParser.ExprIdentificadorContext ctx) {
+        return ctx.ID().getText();
+    }
+
+    @Override
+    public String visitExprAgrupada(MiLenguajeParser.ExprAgrupadaContext ctx) {
+        return visit(ctx.expresion());
+    }
+
+    // =========================================================
+    // EXPRESIONES ARITMÉTICAS
+    // Ejemplo:
+    // a + b
+    // a - b
+    // =========================================================
+    @Override
+    public String visitExprAditiva(MiLenguajeParser.ExprAditivaContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIONES MULTIPLICATIVAS
+    // Ejemplo:
+    // a * b
+    // a / b
+    // a % b
+    // =========================================================
+    @Override
+    public String visitExprMultiplicativa(MiLenguajeParser.ExprMultiplicativaContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIÓN NEGATIVA
+    // Ejemplo:
+    // -x
+    // -(a + b)
+    // =========================================================
+    @Override
+    public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
+        String valor = visit(ctx.expresion());
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = -" + valor);
+
+        return temporal;
+    }
+}
