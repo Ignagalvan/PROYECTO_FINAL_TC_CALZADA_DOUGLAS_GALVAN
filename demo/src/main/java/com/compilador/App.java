@@ -36,7 +36,7 @@ public class App {
         try {
             // Cargar el archivo de texto como un stream de caracteres
             CharStream input = CharStreams.fromFileName(args[0]);
-            System.out.println("Analizando archivo: " + args[0]);
+            System.out.println("🚀 Iniciando compilación de: " + args[0]);
             System.out.println("=".repeat(65));
 
             // =========================================================
@@ -74,7 +74,7 @@ public class App {
             tokens.fill();
 
             // Mostrar tabla de tokens
-            System.out.println("\n=== FASE 1: ANALISIS LEXICO ===\n");
+            System.out.println("\n=== 1. ANÁLISIS LÉXICO ===\n");
             System.out.printf("  %-20s %-25s %-8s %-8s%n",
                     "TIPO DE TOKEN", "LEXEMA", "LINEA", "COLUMNA");
             System.out.println("  " + "-".repeat(63));
@@ -106,6 +106,7 @@ public class App {
             }
 
             System.out.println("\nAnalisis léxico completado sin errores.");
+            System.out.println("  📊 Tokens procesados: " + (tokens.getTokens().size() - 1));
 
             // =========================================================
             // FASE 2: ANÁLISIS SINTÁCTICO (PARSING)
@@ -129,7 +130,7 @@ public class App {
             // exprEntero: 3
             // =========================================================
 
-            System.out.println("\n=== FASE 2: ANALISIS SINTACTICO ===\n");
+            System.out.println("\n===  2. ANÁLISIS SINTÁCTICO ===\n");
 
             // El parser necesita leer los tokens desde el principio.
             // reset() rebobina el stream al token 0.
@@ -175,12 +176,7 @@ public class App {
 
             System.out.println("Analisis sintactico completado sin errores.");
 
-
-
-
-
-
-            System.out.println("\n=== FASE 3: ANALISIS SEMANTICO ===\n");
+            System.out.println("\n=== 3. ANÁLISIS SEMÁNTICO ===\n");
 
             SymbolTable symbolTable = new SymbolTable();
             SemanticAnalyzerVisitor semanticAnalyzer = new SemanticAnalyzerVisitor(symbolTable);
@@ -205,25 +201,28 @@ public class App {
 
             System.out.println("Analisis semantico completado sin errores.");
 
-
-
-            
-
-            System.out.println("\n=== FASE 4: GENERACION DE CODIGO INTERMEDIO ===");
+            System.out.println("\n=== 4. GENERACIÓN DE CÓDIGO INTERMEDIO ===\n");
 
             GeneradorCodigo generadorCodigo = new GeneradorCodigo();
             CodigoVisitor codigoVisitor = new CodigoVisitor(generadorCodigo);
 
             codigoVisitor.visit(arbolParseo);
 
+            System.out.println("  📝 Código de tres direcciones generado:\n");
+
             generadorCodigo.imprimirCodigo();
 
-            System.out.println("\n" + "=".repeat(65));
-            System.out.println("  Compilacion exitosa.");
+            System.out.println("\n  ✅ Código intermedio generado correctamente.");
 
+            System.out.println("\n=== RESUMEN DE COMPILACIÓN ===");
 
+            System.out.println("  📁 Archivo procesado: " + args[0]);
+            System.out.println("  🔤 Tokens analizados: " + (tokens.getTokens().size() - 1));
+            System.out.println("  ✅ Errores léxicos: 0");
+            System.out.println("  ✅ Errores sintácticos: 0");
+            System.out.println("  ✅ Errores semánticos: 0");
 
-
+            System.out.println("\n🎉 ¡COMPILACIÓN EXITOSA! 🎉");
 
             // =========================================================
             // VISUALIZADOR GRÁFICO (Swing)
@@ -245,12 +244,8 @@ public class App {
             System.err.println("Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
-
-
-
-
-    
 
     // =========================================================
     // ÁRBOL VISUAL — métodos auxiliares
