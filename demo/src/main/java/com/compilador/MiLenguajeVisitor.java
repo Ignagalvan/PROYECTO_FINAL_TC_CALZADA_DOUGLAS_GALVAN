@@ -1,4 +1,4 @@
-// Generated from com/compilador/MiLenguaje.g4 by ANTLR 4.9.3
+// Generated from com\compilador\MiLenguaje.g4 by ANTLR 4.9.3
 package com.compilador;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -65,11 +65,23 @@ public interface MiLenguajeVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAsignacion(MiLenguajeParser.AsignacionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#accesoVariable}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAccesoVariable(MiLenguajeParser.AccesoVariableContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#llamadaFuncion}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiLenguajeParser#argumentos}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgumentos(MiLenguajeParser.ArgumentosContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiLenguajeParser#sentenciaCout}.
 	 * @param ctx the parse tree

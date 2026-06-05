@@ -43,7 +43,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     // =========================================================
     @Override
     public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
-        String nombreVariable = ctx.ID().getText();
+        String nombreVariable = ctx.accesoVariable().getText();
         String valor = visit(ctx.expresion());
 
         generador.emitir(nombreVariable + " = " + valor);
@@ -402,7 +402,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
 
     @Override
     public String visitExprIdentificador(MiLenguajeParser.ExprIdentificadorContext ctx) {
-        return ctx.ID().getText();
+        return ctx.accesoVariable().getText();
     }
 
     @Override
