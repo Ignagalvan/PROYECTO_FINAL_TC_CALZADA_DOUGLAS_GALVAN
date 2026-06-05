@@ -54,37 +54,68 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     @Override
     public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
         String condicion = visit(ctx.expresion());
-    
+
         boolean tieneElse = ctx.bloque().size() > 1;
-    
+
         if (tieneElse) {
             String etiquetaElse = generador.nuevaEtiqueta();
             String etiquetaFin = generador.nuevaEtiqueta();
-        
+
             generador.emitir("if !" + condicion + " goto " + etiquetaElse);
-        
+
             // Bloque del IF
             visit(ctx.bloque(0));
-        
+
             generador.emitir("goto " + etiquetaFin);
-        
+
             // Bloque del ELSE
             generador.emitir(etiquetaElse + ":");
             visit(ctx.bloque(1));
-        
+
             // Fin del IF-ELSE
             generador.emitir(etiquetaFin + ":");
         } else {
             String etiquetaFin = generador.nuevaEtiqueta();
-        
+
             generador.emitir("if !" + condicion + " goto " + etiquetaFin);
-        
+
             // Bloque del IF
             visit(ctx.bloque(0));
-        
+
             // Fin del IF
             generador.emitir(etiquetaFin + ":");
         }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA WHILE
+    // Ejemplo:
+    // while (x < 10) { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) {
+        String etiquetaInicio = generador.nuevaEtiqueta();
+        String etiquetaFin = generador.nuevaEtiqueta();
+    
+        // Inicio del bucle
+        generador.emitir(etiquetaInicio + ":");
+    
+        // Evaluar condición
+        String condicion = visit(ctx.expresion());
+    
+        // Si la condición es falsa, salir del bucle
+        generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+    
+        // Cuerpo del while
+        visit(ctx.bloque());
+    
+        // Volver a evaluar la condición
+        generador.emitir("goto " + etiquetaInicio);
+    
+        // Fin del bucle
+        generador.emitir(etiquetaFin + ":");
     
         return null;
     }
