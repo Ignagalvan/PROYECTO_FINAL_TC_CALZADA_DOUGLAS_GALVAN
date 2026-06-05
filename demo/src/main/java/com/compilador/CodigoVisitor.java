@@ -245,6 +245,55 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     // =========================================================
+    // SENTENCIA GENÉRICA
+    // Se usa para detectar llamadas a función como sentencia.
+    // Ejemplo:
+    // saludar();
+    // obtenerCinco();
+    // =========================================================
+    @Override
+    public String visitSentencia(MiLenguajeParser.SentenciaContext ctx) {
+        if (ctx.llamadaFuncion() != null) {
+            String nombreFuncion = ctx.llamadaFuncion().ID().getText();
+            generador.emitir("call " + nombreFuncion);
+            return null;
+        }
+    
+        return visitChildren(ctx);
+    }
+    
+    // =========================================================
+    // LLAMADA A FUNCIÓN DENTRO DE UNA EXPRESIÓN
+    // Ejemplo:
+    // x = obtenerCinco();
+    // y = obtenerCinco() + 2;
+    // =========================================================
+    @Override
+    public String visitExprLlamadaFuncion(MiLenguajeParser.ExprLlamadaFuncionContext ctx) {
+        return visit(ctx.llamadaFuncion());
+    }
+    
+    // =========================================================
+    // LLAMADA A FUNCIÓN
+    // Cuando la llamada se usa como expresión, guarda el resultado
+    // en una temporal.
+    // Ejemplo:
+    // x = obtenerCinco();
+    // genera:
+    // t0 = call obtenerCinco
+    // x = t0
+    // =========================================================
+    @Override
+    public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
+        String nombreFuncion = ctx.ID().getText();
+    
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = call " + nombreFuncion);
+    
+        return temporal;
+    }
+
+    // =========================================================
     // EXPRESIONES LITERALES Y VARIABLES
     // Estos no generan instrucciones, solo devuelven su texto.
     // =========================================================
