@@ -12,12 +12,10 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
 
     private final List<SemanticError> errores = new ArrayList<>();
     private final List<SemanticWarning> warnings = new ArrayList<>();
-    
 
     private int nivelBucles = 0;
     private int nivelFunciones = 0;
 
-    
     public SemanticAnalyzerVisitor(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
     }
@@ -95,4 +93,34 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
 
         return null;
     }
+
+    @Override
+    public Void visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
+        String nombre = ctx.ID().getText();
+
+        if (symbolTable.resolveVariable(nombre) == null) {
+            errores.add(new SemanticError(
+                    ctx.ID().getSymbol().getLine(),
+                    ctx.ID().getSymbol().getCharPositionInLine(),
+                    "Variable '" + nombre + "' no declarada."));
+        }
+
+        visit(ctx.expresion());
+        return null;
+    }
+
+    @Override
+    public Void visitExprIdentificador(MiLenguajeParser.ExprIdentificadorContext ctx) {
+        String nombre = ctx.ID().getText();
+
+        if (symbolTable.resolveVariable(nombre) == null) {
+            errores.add(new SemanticError(
+                    ctx.ID().getSymbol().getLine(),
+                    ctx.ID().getSymbol().getCharPositionInLine(),
+                    "Variable '" + nombre + "' no declarada."));
+        }
+
+        return null;
+    }
+
 }
