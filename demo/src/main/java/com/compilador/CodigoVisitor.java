@@ -98,24 +98,97 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) {
         String etiquetaInicio = generador.nuevaEtiqueta();
         String etiquetaFin = generador.nuevaEtiqueta();
-    
+
         // Inicio del bucle
         generador.emitir(etiquetaInicio + ":");
-    
+
         // Evaluar condición
         String condicion = visit(ctx.expresion());
-    
+
         // Si la condición es falsa, salir del bucle
         generador.emitir("if !" + condicion + " goto " + etiquetaFin);
-    
+
         // Cuerpo del while
         visit(ctx.bloque());
-    
+
         // Volver a evaluar la condición
         generador.emitir("goto " + etiquetaInicio);
-    
+
         // Fin del bucle
         generador.emitir(etiquetaFin + ":");
+
+        return null;
+    }
+
+        // =========================================================
+    // SENTENCIA FOR
+    // Ejemplo:
+    // for (int i = 0; i < 10; i = i + 1) { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
+        String etiquetaInicio = generador.nuevaEtiqueta();
+        String etiquetaFin = generador.nuevaEtiqueta();
+    
+        // 1. Inicialización del for
+        // Ejemplo: int i = 0
+        visit(ctx.inicializacionFor());
+    
+        // 2. Inicio del bucle
+        generador.emitir(etiquetaInicio + ":");
+    
+        // 3. Evaluar condición
+        // Ejemplo: i < 10
+        String condicion = visit(ctx.expresion());
+    
+        // 4. Si la condición es falsa, salir del for
+        generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+    
+        // 5. Cuerpo del for
+        visit(ctx.bloque());
+    
+        // 6. Actualización
+        // Ejemplo: i = i + 1
+        visit(ctx.actualizacionFor());
+    
+        // 7. Volver al inicio
+        generador.emitir("goto " + etiquetaInicio);
+    
+        // 8. Fin del for
+        generador.emitir(etiquetaFin + ":");
+    
+        return null;
+    }
+    
+    // =========================================================
+    // INICIALIZACIÓN DEL FOR
+    // Ejemplos:
+    // int i = 0
+    // i = 0
+    // =========================================================
+    @Override
+    public String visitInicializacionFor(MiLenguajeParser.InicializacionForContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+        String valor = visit(ctx.expresion());
+    
+        // En código intermedio, tanto "int i = 0" como "i = 0"
+        // se representan como una asignación.
+        generador.emitir(nombreVariable + " = " + valor);
+    
+        return null;
+    }
+    
+    // =========================================================
+    // ACTUALIZACIÓN DEL FOR
+    // Ejemplo:
+    // i = i + 1
+    // =========================================================
+    @Override
+    public String visitActualizacionFor(MiLenguajeParser.ActualizacionForContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+        String valor = visit(ctx.expresion());
+    
+        generador.emitir(nombreVariable + " = " + valor);
     
         return null;
     }
