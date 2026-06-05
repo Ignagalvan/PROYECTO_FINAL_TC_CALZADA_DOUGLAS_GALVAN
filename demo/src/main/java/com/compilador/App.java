@@ -64,7 +64,7 @@ public class App {
                         int line, int charPositionInLine,
                         String msg, RecognitionException e) {
                     erroresLexicos.add(
-                            "  [Línea " + line + ":" + charPositionInLine + "] " + msg);
+                            "  [Linea " + line + ":" + charPositionInLine + "] " + msg);
                 }
             });
 
@@ -74,9 +74,9 @@ public class App {
             tokens.fill();
 
             // Mostrar tabla de tokens
-            System.out.println("\n=== FASE 1: ANÁLISIS LÉXICO ===\n");
+            System.out.println("\n=== FASE 1: ANALISIS LEXICO ===\n");
             System.out.printf("  %-20s %-25s %-8s %-8s%n",
-                    "TIPO DE TOKEN", "LEXEMA", "LÍNEA", "COLUMNA");
+                    "TIPO DE TOKEN", "LEXEMA", "LINEA", "COLUMNA");
             System.out.println("  " + "-".repeat(63));
 
             for (Token token : tokens.getTokens()) {
@@ -97,15 +97,15 @@ public class App {
 
             // Si hubo errores léxicos, reportar y detener
             if (!erroresLexicos.isEmpty()) {
-                System.out.println("\n  ❌ ERRORES LÉXICOS:");
+                System.out.println("\n ERRORES LEXICOS:");
                 for (String error : erroresLexicos) {
                     System.out.println(error);
                 }
-                System.out.println("\n  El análisis no puede continuar con errores léxicos.");
+                System.out.println("\n El analisis no puede continuar con errores léxicos.");
                 return;
             }
 
-            System.out.println("\nAnálisis léxico completado sin errores.");
+            System.out.println("\nAnalisis léxico completado sin errores.");
 
             // =========================================================
             // FASE 2: ANÁLISIS SINTÁCTICO (PARSING)
@@ -129,7 +129,7 @@ public class App {
             // exprEntero: 3
             // =========================================================
 
-            System.out.println("\n=== FASE 2: ANÁLISIS SINTÁCTICO ===\n");
+            System.out.println("\n=== FASE 2: ANALISIS SINTACTICO ===\n");
 
             // El parser necesita leer los tokens desde el principio.
             // reset() rebobina el stream al token 0.
@@ -150,7 +150,7 @@ public class App {
                             ? "'" + offendingSymbol + "'"
                             : "fin de archivo";
                     erroresSintacticos.add(
-                            "  [Línea " + line + ":" + charPositionInLine + "] "
+                            "  [Linea " + line + ":" + charPositionInLine + "] "
                                     + "cerca de " + tokenErroneo + " → " + msg);
                 }
             });
@@ -161,7 +161,7 @@ public class App {
 
             // Verificar si hubo errores
             if (!erroresSintacticos.isEmpty()) {
-                System.out.println("ERRORES SINTÁCTICOS:");
+                System.out.println("ERRORES SINTACTICOS:");
                 for (String error : erroresSintacticos) {
                     System.out.println(error);
                 }
@@ -173,16 +173,16 @@ public class App {
                 return;
             }
 
-            System.out.println("Análisis sintáctico completado sin errores.");
+            System.out.println("Analisis sintactico completado sin errores.");
 
-            System.out.println("\n=== FASE 3: ANÁLISIS SEMÁNTICO ===\n");
+            System.out.println("\n=== FASE 3: ANALISIS SEMANTICO ===\n");
 
             SymbolTable symbolTable = new SymbolTable();
             SemanticAnalyzerVisitor semanticAnalyzer = new SemanticAnalyzerVisitor(symbolTable);
             semanticAnalyzer.visit(arbolParseo);
 
             if (!semanticAnalyzer.getWarnings().isEmpty()) {
-                System.out.println("WARNINGS SEMÁNTICOS:");
+                System.out.println("WARNINGS SEMANTICOS:");
                 for (SemanticWarning warning : semanticAnalyzer.getWarnings()) {
                     System.out.println("  " + warning);
                 }
@@ -194,13 +194,13 @@ public class App {
                 for (SemanticError error : semanticAnalyzer.getErrores()) {
                     System.out.println("  " + error);
                 }
-                System.out.println("\n  El análisis no puede continuar con errores semánticos.");
+                System.out.println("\n  El analisis no puede continuar con errores semanticos.");
                 return;
             }
 
-            System.out.println("Análisis semántico completado sin errores.");
+            System.out.println("Analisis semantico completado sin errores.");
 
-            System.out.println("\n=== FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO ===");
+            System.out.println("\n=== FASE 4: GENERACION DE CODIGO INTERMEDIO ===");
 
             GeneradorCodigo generadorCodigo = new GeneradorCodigo();
             CodigoVisitor codigoVisitor = new CodigoVisitor(generadorCodigo);
@@ -227,9 +227,9 @@ public class App {
             mostrarArbol(arbolParseo, parser);
 
         } catch (IOException e) {
-            System.err.println("❌ No se pudo leer el archivo: " + e.getMessage());
+            System.err.println("No se pudo leer el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("❌ Error inesperado: " + e.getMessage());
+            System.err.println("Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -238,7 +238,7 @@ public class App {
     // ÁRBOL VISUAL — métodos auxiliares
     // =========================================================
     private static void mostrarArbol(ParseTree tree, Parser parser) {
-        JFrame frame = new JFrame("Árbol Sintáctico");
+        JFrame frame = new JFrame("Arbol Sintáctico");
         JPanel panel = new JPanel();
         TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
         viewer.setScale(1.5);
