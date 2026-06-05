@@ -4,14 +4,23 @@ import com.compilador.MiLenguajeBaseVisitor;
 import com.compilador.MiLenguajeParser;
 import java.util.ArrayList;
 import java.util.List;
+import com.compilador.SymbolTable;
 
 public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
 
+    private final SymbolTable symbolTable;
+
     private final List<SemanticError> errores = new ArrayList<>();
     private final List<SemanticWarning> warnings = new ArrayList<>();
+    
 
     private int nivelBucles = 0;
     private int nivelFunciones = 0;
+
+    
+    public SemanticAnalyzerVisitor(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
 
     public List<SemanticError> getErrores() {
         return errores;
@@ -53,10 +62,9 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     public Void visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
         if (nivelBucles == 0) {
             errores.add(new SemanticError(
-                ctx.BREAK().getSymbol().getLine(),
-                ctx.BREAK().getSymbol().getCharPositionInLine(),
-                "Uso de 'break' fuera de un bucle."
-            ));
+                    ctx.BREAK().getSymbol().getLine(),
+                    ctx.BREAK().getSymbol().getCharPositionInLine(),
+                    "Uso de 'break' fuera de un bucle."));
         }
         return null;
     }
@@ -65,10 +73,9 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     public Void visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
         if (nivelBucles == 0) {
             errores.add(new SemanticError(
-                ctx.CONTINUE().getSymbol().getLine(),
-                ctx.CONTINUE().getSymbol().getCharPositionInLine(),
-                "Uso de 'continue' fuera de un bucle."
-            ));
+                    ctx.CONTINUE().getSymbol().getLine(),
+                    ctx.CONTINUE().getSymbol().getCharPositionInLine(),
+                    "Uso de 'continue' fuera de un bucle."));
         }
         return null;
     }
@@ -77,10 +84,9 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     public Void visitSentenciaReturn(MiLenguajeParser.SentenciaReturnContext ctx) {
         if (nivelFunciones == 0) {
             errores.add(new SemanticError(
-                ctx.RETURN().getSymbol().getLine(),
-                ctx.RETURN().getSymbol().getCharPositionInLine(),
-                "Uso de 'return' fuera de una función."
-            ));
+                    ctx.RETURN().getSymbol().getLine(),
+                    ctx.RETURN().getSymbol().getCharPositionInLine(),
+                    "Uso de 'return' fuera de una función."));
         }
 
         if (ctx.expresion() != null) {
