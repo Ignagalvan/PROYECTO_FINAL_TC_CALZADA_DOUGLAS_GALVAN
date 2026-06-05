@@ -128,18 +128,102 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     }
 
     // =========================================================
-    // EXPRESIÓN NEGATIVA
+    // EXPRESIONES RELACIONALES
     // Ejemplo:
-    // -x
-    // -(a + b)
+    // a > b
+    // x <= 10
     // =========================================================
     @Override
-    public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
-        String valor = visit(ctx.expresion());
+    public String visitExprRelacional(MiLenguajeParser.ExprRelacionalContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
 
         String temporal = generador.nuevaTemporal();
-        generador.emitir(temporal + " = -" + valor);
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
 
         return temporal;
     }
-}
+
+    // =========================================================
+    // EXPRESIONES DE IGUALDAD
+    // Ejemplo:
+    // a == b
+    // x != 0
+    // =========================================================
+    @Override
+    public String visitExprIgualdad(MiLenguajeParser.ExprIgualdadContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
+    
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+    
+        return temporal;
+    }
+    
+    // =========================================================
+    // EXPRESIÓN AND
+    // Ejemplo:
+    // a > b && b > c
+    // =========================================================
+    @Override
+    public String visitExprAnd(MiLenguajeParser.ExprAndContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+    
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " && " + derecha);
+    
+        return temporal;
+    }
+    
+    // =========================================================
+    // EXPRESIÓN OR
+    // Ejemplo:
+    // a > b || c == 0
+    // =========================================================
+    @Override
+    public String visitExprOr(MiLenguajeParser.ExprOrContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+    
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " || " + derecha);
+    
+        return temporal;
+    }
+    
+    // =========================================================
+    // EXPRESIÓN NOT
+    // Ejemplo:
+    // !activo
+    // !(a > b)
+    // =========================================================
+    @Override
+    public String visitExprNot(MiLenguajeParser.ExprNotContext ctx) {
+        String valor = visit(ctx.expresion());
+    
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = !" + valor);
+    
+        return temporal;
+    }
+    
+        // =========================================================
+        // EXPRESIÓN NEGATIVA
+        // Ejemplo:
+        // -x
+        // -(a + b)
+        // =========================================================
+        @Override
+        public String visitExprNegativo(MiLenguajeParser.ExprNegativoContext ctx) {
+            String valor = visit(ctx.expresion());
+        
+            String temporal = generador.nuevaTemporal();
+            generador.emitir(temporal + " = -" + valor);
+        
+            return temporal;
+        }
+    }
