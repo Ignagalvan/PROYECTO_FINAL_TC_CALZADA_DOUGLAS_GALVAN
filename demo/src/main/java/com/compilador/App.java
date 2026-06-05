@@ -170,6 +170,15 @@ public class App {
 
             System.out.println("  ✅ Análisis sintáctico completado sin errores.");
 
+            System.out.println("\n=== FASE 4: GENERACIÓN DE CÓDIGO INTERMEDIO ===");
+
+            GeneradorCodigo generadorCodigo = new GeneradorCodigo();
+            CodigoVisitor codigoVisitor = new CodigoVisitor(generadorCodigo);
+
+            codigoVisitor.visit(arbolParseo);
+
+            generadorCodigo.imprimirCodigo();
+
             System.out.println("\n" + "=".repeat(65));
             System.out.println("  Compilacion exitosa.");
 
