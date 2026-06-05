@@ -1521,7 +1521,7 @@ public class MiLenguajeParser extends Parser {
 				setState(181);
 				match(NOT);
 				setState(182);
-				expresion(11);
+				expresion(17);
 				}
 				break;
 			case 2:
@@ -1532,7 +1532,7 @@ public class MiLenguajeParser extends Parser {
 				setState(183);
 				match(RES);
 				setState(184);
-				expresion(10);
+				expresion(16);
 				}
 				break;
 			case 3:
@@ -1635,95 +1635,11 @@ public class MiLenguajeParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,12,_ctx) ) {
 					case 1:
 						{
-						_localctx = new ExprOrContext(new ExpresionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(199);
-						if (!(precpred(_ctx, 17))) throw new FailedPredicateException(this, "precpred(_ctx, 17)");
-						setState(200);
-						match(OR);
-						setState(201);
-						expresion(18);
-						}
-						break;
-					case 2:
-						{
-						_localctx = new ExprAndContext(new ExpresionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(202);
-						if (!(precpred(_ctx, 16))) throw new FailedPredicateException(this, "precpred(_ctx, 16)");
-						setState(203);
-						match(AND);
-						setState(204);
-						expresion(17);
-						}
-						break;
-					case 3:
-						{
-						_localctx = new ExprIgualdadContext(new ExpresionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(205);
-						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
-						setState(206);
-						_la = _input.LA(1);
-						if ( !(_la==EQL || _la==DISTINTO) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(207);
-						expresion(16);
-						}
-						break;
-					case 4:
-						{
-						_localctx = new ExprRelacionalContext(new ExpresionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(208);
-						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
-						setState(209);
-						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MAYOR_IGUAL) | (1L << MENOR_IGUAL) | (1L << MAYOR) | (1L << MENOR))) != 0)) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(210);
-						expresion(15);
-						}
-						break;
-					case 5:
-						{
-						_localctx = new ExprAditivaContext(new ExpresionContext(_parentctx, _parentState));
-						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(211);
-						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
-						setState(212);
-						_la = _input.LA(1);
-						if ( !(_la==SUM || _la==RES) ) {
-						_errHandler.recoverInline(this);
-						}
-						else {
-							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-							_errHandler.reportMatch(this);
-							consume();
-						}
-						setState(213);
-						expresion(14);
-						}
-						break;
-					case 6:
-						{
 						_localctx = new ExprMultiplicativaContext(new ExpresionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
-						setState(214);
-						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
-						setState(215);
+						setState(199);
+						if (!(precpred(_ctx, 15))) throw new FailedPredicateException(this, "precpred(_ctx, 15)");
+						setState(200);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MUL) | (1L << DIV) | (1L << MOD))) != 0)) ) {
 						_errHandler.recoverInline(this);
@@ -1733,8 +1649,92 @@ public class MiLenguajeParser extends Parser {
 							_errHandler.reportMatch(this);
 							consume();
 						}
-						setState(216);
+						setState(201);
+						expresion(16);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new ExprAditivaContext(new ExpresionContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(202);
+						if (!(precpred(_ctx, 14))) throw new FailedPredicateException(this, "precpred(_ctx, 14)");
+						setState(203);
+						_la = _input.LA(1);
+						if ( !(_la==SUM || _la==RES) ) {
+						_errHandler.recoverInline(this);
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
+							consume();
+						}
+						setState(204);
+						expresion(15);
+						}
+						break;
+					case 3:
+						{
+						_localctx = new ExprRelacionalContext(new ExpresionContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(205);
+						if (!(precpred(_ctx, 13))) throw new FailedPredicateException(this, "precpred(_ctx, 13)");
+						setState(206);
+						_la = _input.LA(1);
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MAYOR_IGUAL) | (1L << MENOR_IGUAL) | (1L << MAYOR) | (1L << MENOR))) != 0)) ) {
+						_errHandler.recoverInline(this);
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
+							consume();
+						}
+						setState(207);
+						expresion(14);
+						}
+						break;
+					case 4:
+						{
+						_localctx = new ExprIgualdadContext(new ExpresionContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(208);
+						if (!(precpred(_ctx, 12))) throw new FailedPredicateException(this, "precpred(_ctx, 12)");
+						setState(209);
+						_la = _input.LA(1);
+						if ( !(_la==EQL || _la==DISTINTO) ) {
+						_errHandler.recoverInline(this);
+						}
+						else {
+							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+							_errHandler.reportMatch(this);
+							consume();
+						}
+						setState(210);
 						expresion(13);
+						}
+						break;
+					case 5:
+						{
+						_localctx = new ExprAndContext(new ExpresionContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(211);
+						if (!(precpred(_ctx, 11))) throw new FailedPredicateException(this, "precpred(_ctx, 11)");
+						setState(212);
+						match(AND);
+						setState(213);
+						expresion(12);
+						}
+						break;
+					case 6:
+						{
+						_localctx = new ExprOrContext(new ExpresionContext(_parentctx, _parentState));
+						pushNewRecursionContext(_localctx, _startState, RULE_expresion);
+						setState(214);
+						if (!(precpred(_ctx, 10))) throw new FailedPredicateException(this, "precpred(_ctx, 10)");
+						setState(215);
+						match(OR);
+						setState(216);
+						expresion(11);
 						}
 						break;
 					}
@@ -1767,17 +1767,17 @@ public class MiLenguajeParser extends Parser {
 	private boolean expresion_sempred(ExpresionContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 17);
-		case 1:
-			return precpred(_ctx, 16);
-		case 2:
 			return precpred(_ctx, 15);
-		case 3:
+		case 1:
 			return precpred(_ctx, 14);
-		case 4:
+		case 2:
 			return precpred(_ctx, 13);
-		case 5:
+		case 3:
 			return precpred(_ctx, 12);
+		case 4:
+			return precpred(_ctx, 11);
+		case 5:
+			return precpred(_ctx, 10);
 		}
 		return true;
 	}
@@ -1800,7 +1800,7 @@ public class MiLenguajeParser extends Parser {
 		"\3\26\3\26\3\26\5\26\u00c8\n\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26"+
 		"\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\3\26\7\26\u00dc\n\26\f\26"+
 		"\16\26\u00df\13\26\3\26\2\3*\27\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36"+
-		" \"$&(*\2\7\3\2\"(\3\2\f\r\3\2\16\21\3\2\23\24\3\2\25\27\2\u00ef\2/\3"+
+		" \"$&(*\2\7\3\2\"(\3\2\25\27\3\2\23\24\3\2\16\21\3\2\f\r\2\u00ef\2/\3"+
 		"\2\2\2\4\66\3\2\2\2\68\3\2\2\2\bA\3\2\2\2\nI\3\2\2\2\fY\3\2\2\2\16[\3"+
 		"\2\2\2\20c\3\2\2\2\22e\3\2\2\2\24j\3\2\2\2\26n\3\2\2\2\30z\3\2\2\2\32"+
 		"\u0083\3\2\2\2\34\u0089\3\2\2\2\36\u009b\3\2\2\2 \u009d\3\2\2\2\"\u00a1"+
@@ -1837,21 +1837,21 @@ public class MiLenguajeParser extends Parser {
 		"\7\7\2\2\u00ae\u00b0\5\f\7\2\u00af\u00ae\3\2\2\2\u00b0\u00b3\3\2\2\2\u00b1"+
 		"\u00af\3\2\2\2\u00b1\u00b2\3\2\2\2\u00b2\u00b4\3\2\2\2\u00b3\u00b1\3\2"+
 		"\2\2\u00b4\u00b5\7\b\2\2\u00b5)\3\2\2\2\u00b6\u00b7\b\26\1\2\u00b7\u00b8"+
-		"\7\32\2\2\u00b8\u00c8\5*\26\r\u00b9\u00ba\7\24\2\2\u00ba\u00c8\5*\26\f"+
-		"\u00bb\u00bc\7\3\2\2\u00bc\u00bd\5*\26\2\u00bd\u00be\7\4\2\2\u00be\u00c8"+
-		"\3\2\2\2\u00bf\u00c8\5\24\13\2\u00c0\u00c8\7-\2\2\u00c1\u00c8\7.\2\2\u00c2"+
-		"\u00c8\7/\2\2\u00c3\u00c8\7\60\2\2\u00c4\u00c8\7)\2\2\u00c5\u00c8\7*\2"+
-		"\2\u00c6\u00c8\7,\2\2\u00c7\u00b6\3\2\2\2\u00c7\u00b9\3\2\2\2\u00c7\u00bb"+
-		"\3\2\2\2\u00c7\u00bf\3\2\2\2\u00c7\u00c0\3\2\2\2\u00c7\u00c1\3\2\2\2\u00c7"+
-		"\u00c2\3\2\2\2\u00c7\u00c3\3\2\2\2\u00c7\u00c4\3\2\2\2\u00c7\u00c5\3\2"+
-		"\2\2\u00c7\u00c6\3\2\2\2\u00c8\u00dd\3\2\2\2\u00c9\u00ca\f\23\2\2\u00ca"+
-		"\u00cb\7\30\2\2\u00cb\u00dc\5*\26\24\u00cc\u00cd\f\22\2\2\u00cd\u00ce"+
-		"\7\31\2\2\u00ce\u00dc\5*\26\23\u00cf\u00d0\f\21\2\2\u00d0\u00d1\t\3\2"+
-		"\2\u00d1\u00dc\5*\26\22\u00d2\u00d3\f\20\2\2\u00d3\u00d4\t\4\2\2\u00d4"+
-		"\u00dc\5*\26\21\u00d5\u00d6\f\17\2\2\u00d6\u00d7\t\5\2\2\u00d7\u00dc\5"+
-		"*\26\20\u00d8\u00d9\f\16\2\2\u00d9\u00da\t\6\2\2\u00da\u00dc\5*\26\17"+
-		"\u00db\u00c9\3\2\2\2\u00db\u00cc\3\2\2\2\u00db\u00cf\3\2\2\2\u00db\u00d2"+
-		"\3\2\2\2\u00db\u00d5\3\2\2\2\u00db\u00d8\3\2\2\2\u00dc\u00df\3\2\2\2\u00dd"+
+		"\7\32\2\2\u00b8\u00c8\5*\26\23\u00b9\u00ba\7\24\2\2\u00ba\u00c8\5*\26"+
+		"\22\u00bb\u00bc\7\3\2\2\u00bc\u00bd\5*\26\2\u00bd\u00be\7\4\2\2\u00be"+
+		"\u00c8\3\2\2\2\u00bf\u00c8\5\24\13\2\u00c0\u00c8\7-\2\2\u00c1\u00c8\7"+
+		".\2\2\u00c2\u00c8\7/\2\2\u00c3\u00c8\7\60\2\2\u00c4\u00c8\7)\2\2\u00c5"+
+		"\u00c8\7*\2\2\u00c6\u00c8\7,\2\2\u00c7\u00b6\3\2\2\2\u00c7\u00b9\3\2\2"+
+		"\2\u00c7\u00bb\3\2\2\2\u00c7\u00bf\3\2\2\2\u00c7\u00c0\3\2\2\2\u00c7\u00c1"+
+		"\3\2\2\2\u00c7\u00c2\3\2\2\2\u00c7\u00c3\3\2\2\2\u00c7\u00c4\3\2\2\2\u00c7"+
+		"\u00c5\3\2\2\2\u00c7\u00c6\3\2\2\2\u00c8\u00dd\3\2\2\2\u00c9\u00ca\f\21"+
+		"\2\2\u00ca\u00cb\t\3\2\2\u00cb\u00dc\5*\26\22\u00cc\u00cd\f\20\2\2\u00cd"+
+		"\u00ce\t\4\2\2\u00ce\u00dc\5*\26\21\u00cf\u00d0\f\17\2\2\u00d0\u00d1\t"+
+		"\5\2\2\u00d1\u00dc\5*\26\20\u00d2\u00d3\f\16\2\2\u00d3\u00d4\t\6\2\2\u00d4"+
+		"\u00dc\5*\26\17\u00d5\u00d6\f\r\2\2\u00d6\u00d7\7\31\2\2\u00d7\u00dc\5"+
+		"*\26\16\u00d8\u00d9\f\f\2\2\u00d9\u00da\7\30\2\2\u00da\u00dc\5*\26\r\u00db"+
+		"\u00c9\3\2\2\2\u00db\u00cc\3\2\2\2\u00db\u00cf\3\2\2\2\u00db\u00d2\3\2"+
+		"\2\2\u00db\u00d5\3\2\2\2\u00db\u00d8\3\2\2\2\u00dc\u00df\3\2\2\2\u00dd"+
 		"\u00db\3\2\2\2\u00dd\u00de\3\2\2\2\u00de+\3\2\2\2\u00df\u00dd\3\2\2\2"+
 		"\20/\66<FY_u\u0081\u009b\u00a9\u00b1\u00c7\u00db\u00dd";
 	public static final ATN _ATN =

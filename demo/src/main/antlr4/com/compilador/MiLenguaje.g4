@@ -184,49 +184,61 @@ bloque
 
 expresion
     //------------------------------------------------------------------
-    // Nivel 6 — OR lógico (menor precedencia de todos)
-    // a || b : verdadero si al menos uno es verdadero
-    : expresion OR expresion                                              # exprOr
-
+    // Operadores UNARIOS
+    // En ANTLR4 conviene ubicarlos antes de los operadores binarios,
+    // porque tienen alta precedencia.
     //------------------------------------------------------------------
-    // Nivel 5 — AND lógico
-    // a && b : verdadero solo si ambos son verdaderos
-    | expresion AND expresion                                             # exprAnd
 
-    //------------------------------------------------------------------
-    // Nivel 4 — Igualdad y desigualdad
-    // a == b : comprueba si son iguales
-    // a != b : comprueba si son distintos
-    | expresion (EQL | DISTINTO) expresion                               # exprIgualdad
-
-    //------------------------------------------------------------------
-    // Nivel 3 — Comparaciones relacionales
-    // a > b, a < b, a >= b, a <= b
-    | expresion (MAYOR | MENOR | MAYOR_IGUAL | MENOR_IGUAL) expresion   # exprRelacional
-
-    //------------------------------------------------------------------
-    // Nivel 2 — Suma y resta
-    // a + b, a - b
-    | expresion (SUM | RES) expresion                                    # exprAditiva
-
-    //------------------------------------------------------------------
-    // Nivel 1 — Multiplicación, división, módulo (mayor precedencia binaria)
-    // a * b, a / b, a % b
-    | expresion (MUL | DIV | MOD) expresion                             # exprMultiplicativa
-
-    //------------------------------------------------------------------
-    // Operadores UNARIOS (actúan sobre un solo operando)
-    // !verdadero  →  falso
-    | NOT expresion                                                       # exprNot
+    // !verdadero  → falso
+    : NOT expresion                                                       # exprNot
 
     // -5, -(x + 1)
     | RES expresion                                                       # exprNegativo
 
     //------------------------------------------------------------------
-    // EXPRESIONES PRIMARIAS (mayor precedencia — se evalúan primero)
+    // Nivel 1 — Multiplicación, división, módulo
+    // Mayor precedencia binaria
+    // a * b, a / b, a % b
+    //------------------------------------------------------------------
+    | expresion (MUL | DIV | MOD) expresion                              # exprMultiplicativa
+
+    //------------------------------------------------------------------
+    // Nivel 2 — Suma y resta
+    // a + b, a - b
+    //------------------------------------------------------------------
+    | expresion (SUM | RES) expresion                                    # exprAditiva
+
+    //------------------------------------------------------------------
+    // Nivel 3 — Comparaciones relacionales
+    // a > b, a < b, a >= b, a <= b
+    //------------------------------------------------------------------
+    | expresion (MAYOR | MENOR | MAYOR_IGUAL | MENOR_IGUAL) expresion    # exprRelacional
+
+    //------------------------------------------------------------------
+    // Nivel 4 — Igualdad y desigualdad
+    // a == b, a != b
+    //------------------------------------------------------------------
+    | expresion (EQL | DISTINTO) expresion                               # exprIgualdad
+
+    //------------------------------------------------------------------
+    // Nivel 5 — AND lógico
+    // a && b
+    //------------------------------------------------------------------
+    | expresion AND expresion                                             # exprAnd
+
+    //------------------------------------------------------------------
+    // Nivel 6 — OR lógico
+    // Menor precedencia de todos los operadores binarios
+    // a || b
+    //------------------------------------------------------------------
+    | expresion OR expresion                                              # exprOr
+
+    //------------------------------------------------------------------
+    // EXPRESIONES PRIMARIAS
+    //------------------------------------------------------------------
 
     // Paréntesis: agrupan y fuerzan el orden de evaluación
-    // (2 + 3) * 4  →  20
+    // (2 + 3) * 4  → 20
     | PA expresion PC                                                     # exprAgrupada
 
     // Llamada a funcion dentro de una expresion: x = suma();
