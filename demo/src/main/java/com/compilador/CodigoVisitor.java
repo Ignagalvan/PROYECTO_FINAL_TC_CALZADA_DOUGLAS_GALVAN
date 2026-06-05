@@ -1,8 +1,14 @@
 package com.compilador;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
 
     private final GeneradorCodigo generador;
+
+    private final Deque<String> pilaBreak = new ArrayDeque<>();
+    private final Deque<String> pilaContinue = new ArrayDeque<>();
 
     public CodigoVisitor(GeneradorCodigo generador) {
         this.generador = generador;
@@ -43,6 +49,320 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         generador.emitir(nombreVariable + " = " + valor);
 
         return null;
+    }
+
+    // =========================================================
+    // SENTENCIA IF / IF-ELSE
+    // Ejemplos:
+    // if (x > y) { ... }
+    // if (x > y) { ... } else { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaIf(MiLenguajeParser.SentenciaIfContext ctx) {
+        String condicion = visit(ctx.expresion());
+
+        boolean tieneElse = ctx.bloque().size() > 1;
+
+        if (tieneElse) {
+            String etiquetaElse = generador.nuevaEtiqueta();
+            String etiquetaFin = generador.nuevaEtiqueta();
+
+            generador.emitir("if !" + condicion + " goto " + etiquetaElse);
+
+            // Bloque del IF
+            visit(ctx.bloque(0));
+
+            generador.emitir("goto " + etiquetaFin);
+
+            // Bloque del ELSE
+            generador.emitir(etiquetaElse + ":");
+            visit(ctx.bloque(1));
+
+            // Fin del IF-ELSE
+            generador.emitir(etiquetaFin + ":");
+        } else {
+            String etiquetaFin = generador.nuevaEtiqueta();
+
+            generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+
+            // Bloque del IF
+            visit(ctx.bloque(0));
+
+            // Fin del IF
+            generador.emitir(etiquetaFin + ":");
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA WHILE
+    // Ejemplo:
+    // while (x < 10) { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaWhile(MiLenguajeParser.SentenciaWhileContext ctx) {
+        String etiquetaInicio = generador.nuevaEtiqueta();
+        String etiquetaFin = generador.nuevaEtiqueta();
+
+        // Inicio del bucle
+        generador.emitir(etiquetaInicio + ":");
+
+        // Evaluar condición
+        String condicion = visit(ctx.expresion());
+
+        // Si la condición es falsa, salir del bucle
+        generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+
+        // Registrar etiquetas para break y continue dentro de este while
+        pilaBreak.push(etiquetaFin);
+        pilaContinue.push(etiquetaInicio);
+
+        // Cuerpo del while
+        visit(ctx.bloque());
+
+        // Salir del contexto del while
+        pilaBreak.pop();
+        pilaContinue.pop();
+
+        // Volver a evaluar la condición
+        generador.emitir("goto " + etiquetaInicio);
+
+        // Fin del bucle
+        generador.emitir(etiquetaFin + ":");
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA FOR
+    // Ejemplo:
+    // for (int i = 0; i < 10; i = i + 1) { ... }
+    // =========================================================
+    @Override
+    public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
+        String etiquetaInicio = generador.nuevaEtiqueta();
+        String etiquetaActualizacion = generador.nuevaEtiqueta();
+        String etiquetaFin = generador.nuevaEtiqueta();
+
+        // 1. Inicialización del for
+        // Ejemplo: int i = 0
+        visit(ctx.inicializacionFor());
+
+        // 2. Inicio del bucle
+        generador.emitir(etiquetaInicio + ":");
+
+        // 3. Evaluar condición
+        // Ejemplo: i < 10
+        String condicion = visit(ctx.expresion());
+
+        // 4. Si la condición es falsa, salir del for
+        generador.emitir("if !" + condicion + " goto " + etiquetaFin);
+
+        // Registrar etiquetas para break y continue dentro de este for
+        pilaBreak.push(etiquetaFin);
+        pilaContinue.push(etiquetaActualizacion);
+
+        // 5. Cuerpo del for
+        visit(ctx.bloque());
+
+        // Salir del contexto del for
+        pilaBreak.pop();
+        pilaContinue.pop();
+
+        // 6. Actualización
+        // Si aparece un continue dentro del for, salta acá
+        generador.emitir(etiquetaActualizacion + ":");
+        visit(ctx.actualizacionFor());
+
+        // 7. Volver al inicio
+        generador.emitir("goto " + etiquetaInicio);
+
+        // 8. Fin del for
+        generador.emitir(etiquetaFin + ":");
+
+        return null;
+    }
+
+    // =========================================================
+    // INICIALIZACIÓN DEL FOR
+    // Ejemplos:
+    // int i = 0
+    // i = 0
+    // =========================================================
+    @Override
+    public String visitInicializacionFor(MiLenguajeParser.InicializacionForContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+        String valor = visit(ctx.expresion());
+
+        // En código intermedio, tanto "int i = 0" como "i = 0"
+        // se representan como una asignación.
+        generador.emitir(nombreVariable + " = " + valor);
+
+        return null;
+    }
+
+    // =========================================================
+    // ACTUALIZACIÓN DEL FOR
+    // Ejemplo:
+    // i = i + 1
+    // =========================================================
+    @Override
+    public String visitActualizacionFor(MiLenguajeParser.ActualizacionForContext ctx) {
+        String nombreVariable = ctx.ID().getText();
+        String valor = visit(ctx.expresion());
+
+        generador.emitir(nombreVariable + " = " + valor);
+
+        return null;
+    }
+
+    // =========================================================
+    // FUNCIÓN
+    // Ejemplos:
+    // int suma(int a, int b) { return a + b; }
+    // void saludar() { return; }
+    // =========================================================
+    @Override
+    public String visitFuncion(MiLenguajeParser.FuncionContext ctx) {
+        String nombreFuncion = ctx.ID().getText();
+    
+        generador.emitir("");
+        generador.emitir("func " + nombreFuncion + ":");
+    
+        // Parámetros de la función, si existen
+        if (ctx.parametros() != null) {
+            for (MiLenguajeParser.ParametroContext parametro : ctx.parametros().parametro()) {
+                String tipoParametro = parametro.tipo().getText();
+                String nombreParametro = parametro.ID().getText();
+            
+                generador.emitir("param " + tipoParametro + " " + nombreParametro);
+            }
+        }
+    
+        // Cuerpo de la función
+        visit(ctx.bloque());
+    
+        generador.emitir("endfunc");
+        generador.emitir("");
+    
+        return null;
+    }
+    
+    // =========================================================
+    // SENTENCIA RETURN
+    // Ejemplos:
+    // return;
+    // return 5;
+    // return a + b;
+    // =========================================================
+    @Override
+    public String visitSentenciaReturn(MiLenguajeParser.SentenciaReturnContext ctx) {
+        if (ctx.expresion() != null) {
+            String valor = visit(ctx.expresion());
+            generador.emitir("return " + valor);
+        } else {
+            generador.emitir("return");
+        }
+    
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA COUT
+    // Ejemplos:
+    // cout << x;
+    // cout << "Valor: " << x;
+    // =========================================================
+    @Override
+    public String visitSentenciaCout(MiLenguajeParser.SentenciaCoutContext ctx) {
+        for (MiLenguajeParser.ExpresionContext expresion : ctx.expresion()) {
+            String valor = visit(expresion);
+            generador.emitir("print " + valor);
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA BREAK
+    // Ejemplo:
+    // break;
+    // =========================================================
+    @Override
+    public String visitSentenciaBreak(MiLenguajeParser.SentenciaBreakContext ctx) {
+        if (pilaBreak.isEmpty()) {
+            generador.emitir("// error: break fuera de un bucle");
+        } else {
+            generador.emitir("goto " + pilaBreak.peek());
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA CONTINUE
+    // Ejemplo:
+    // continue;
+    // =========================================================
+    @Override
+    public String visitSentenciaContinue(MiLenguajeParser.SentenciaContinueContext ctx) {
+        if (pilaContinue.isEmpty()) {
+            generador.emitir("// error: continue fuera de un bucle");
+        } else {
+            generador.emitir("goto " + pilaContinue.peek());
+        }
+
+        return null;
+    }
+
+    // =========================================================
+    // SENTENCIA GENÉRICA
+    // Se usa para detectar llamadas a función como sentencia.
+    // Ejemplo:
+    // saludar();
+    // obtenerCinco();
+    // =========================================================
+    @Override
+    public String visitSentencia(MiLenguajeParser.SentenciaContext ctx) {
+        if (ctx.llamadaFuncion() != null) {
+            String nombreFuncion = ctx.llamadaFuncion().ID().getText();
+            generador.emitir("call " + nombreFuncion);
+            return null;
+        }
+
+        return visitChildren(ctx);
+    }
+
+    // =========================================================
+    // LLAMADA A FUNCIÓN DENTRO DE UNA EXPRESIÓN
+    // Ejemplo:
+    // x = obtenerCinco();
+    // y = obtenerCinco() + 2;
+    // =========================================================
+    @Override
+    public String visitExprLlamadaFuncion(MiLenguajeParser.ExprLlamadaFuncionContext ctx) {
+        return visit(ctx.llamadaFuncion());
+    }
+
+    // =========================================================
+    // LLAMADA A FUNCIÓN
+    // Cuando la llamada se usa como expresión, guarda el resultado
+    // en una temporal.
+    // Ejemplo:
+    // x = obtenerCinco();
+    // genera:
+    // t0 = call obtenerCinco
+    // x = t0
+    // =========================================================
+    @Override
+    public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
+        String nombreFuncion = ctx.ID().getText();
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = call " + nombreFuncion);
+
+        return temporal;
     }
 
     // =========================================================
@@ -90,6 +410,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         return visit(ctx.expresion());
     }
 
+
     // =========================================================
     // EXPRESIONES ARITMÉTICAS
     // Ejemplo:
@@ -123,6 +444,90 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
 
         String temporal = generador.nuevaTemporal();
         generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIONES RELACIONALES
+    // Ejemplo:
+    // a > b
+    // x <= 10
+    // =========================================================
+    @Override
+    public String visitExprRelacional(MiLenguajeParser.ExprRelacionalContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIONES DE IGUALDAD
+    // Ejemplo:
+    // a == b
+    // x != 0
+    // =========================================================
+    @Override
+    public String visitExprIgualdad(MiLenguajeParser.ExprIgualdadContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+        String operador = ctx.getChild(1).getText();
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " " + operador + " " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIÓN AND
+    // Ejemplo:
+    // a > b && b > c
+    // =========================================================
+    @Override
+    public String visitExprAnd(MiLenguajeParser.ExprAndContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " && " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIÓN OR
+    // Ejemplo:
+    // a > b || c == 0
+    // =========================================================
+    @Override
+    public String visitExprOr(MiLenguajeParser.ExprOrContext ctx) {
+        String izquierda = visit(ctx.expresion(0));
+        String derecha = visit(ctx.expresion(1));
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = " + izquierda + " || " + derecha);
+
+        return temporal;
+    }
+
+    // =========================================================
+    // EXPRESIÓN NOT
+    // Ejemplo:
+    // !activo
+    // !(a > b)
+    // =========================================================
+    @Override
+    public String visitExprNot(MiLenguajeParser.ExprNotContext ctx) {
+        String valor = visit(ctx.expresion());
+
+        String temporal = generador.nuevaTemporal();
+        generador.emitir(temporal + " = !" + valor);
 
         return temporal;
     }

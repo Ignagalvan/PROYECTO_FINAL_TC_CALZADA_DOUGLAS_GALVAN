@@ -1,0 +1,12 @@
+int x = 0;
+int limite = 3;
+int resultado = 0;
+
+while (x < limite) {
+    resultado = resultado + x;
+    x = x + 1;
+}
+
+while (x > 0 && limite != 0) {
+    x = x - 1;
+}

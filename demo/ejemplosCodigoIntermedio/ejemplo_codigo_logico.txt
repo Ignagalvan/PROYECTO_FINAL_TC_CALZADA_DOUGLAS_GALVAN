@@ -1,0 +1,12 @@
+int a = 5;
+int b = 3;
+int c = 0;
+
+bool mayor = a > b;
+bool menor = a < b;
+bool distinto = b != c;
+bool iguales = c == 0;
+
+bool resultadoAnd = a > b && b != c;
+bool resultadoOr = a < b || c == 0;
+bool negado = !(a < b);
