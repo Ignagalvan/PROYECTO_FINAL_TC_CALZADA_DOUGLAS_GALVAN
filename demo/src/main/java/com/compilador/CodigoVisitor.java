@@ -129,37 +129,37 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitSentenciaFor(MiLenguajeParser.SentenciaForContext ctx) {
         String etiquetaInicio = generador.nuevaEtiqueta();
         String etiquetaFin = generador.nuevaEtiqueta();
-    
+
         // 1. Inicialización del for
         // Ejemplo: int i = 0
         visit(ctx.inicializacionFor());
-    
+
         // 2. Inicio del bucle
         generador.emitir(etiquetaInicio + ":");
-    
+
         // 3. Evaluar condición
         // Ejemplo: i < 10
         String condicion = visit(ctx.expresion());
-    
+
         // 4. Si la condición es falsa, salir del for
         generador.emitir("if !" + condicion + " goto " + etiquetaFin);
-    
+
         // 5. Cuerpo del for
         visit(ctx.bloque());
-    
+
         // 6. Actualización
         // Ejemplo: i = i + 1
         visit(ctx.actualizacionFor());
-    
+
         // 7. Volver al inicio
         generador.emitir("goto " + etiquetaInicio);
-    
+
         // 8. Fin del for
         generador.emitir(etiquetaFin + ":");
-    
+
         return null;
     }
-    
+
     // =========================================================
     // INICIALIZACIÓN DEL FOR
     // Ejemplos:
@@ -170,14 +170,14 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitInicializacionFor(MiLenguajeParser.InicializacionForContext ctx) {
         String nombreVariable = ctx.ID().getText();
         String valor = visit(ctx.expresion());
-    
+
         // En código intermedio, tanto "int i = 0" como "i = 0"
         // se representan como una asignación.
         generador.emitir(nombreVariable + " = " + valor);
-    
+
         return null;
     }
-    
+
     // =========================================================
     // ACTUALIZACIÓN DEL FOR
     // Ejemplo:
@@ -187,8 +187,59 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitActualizacionFor(MiLenguajeParser.ActualizacionForContext ctx) {
         String nombreVariable = ctx.ID().getText();
         String valor = visit(ctx.expresion());
-    
+
         generador.emitir(nombreVariable + " = " + valor);
+
+        return null;
+    }
+
+    // =========================================================
+    // FUNCIÓN
+    // Ejemplos:
+    // int suma(int a, int b) { return a + b; }
+    // void saludar() { return; }
+    // =========================================================
+    @Override
+    public String visitFuncion(MiLenguajeParser.FuncionContext ctx) {
+        String nombreFuncion = ctx.ID().getText();
+    
+        generador.emitir("");
+        generador.emitir("func " + nombreFuncion + ":");
+    
+        // Parámetros de la función, si existen
+        if (ctx.parametros() != null) {
+            for (MiLenguajeParser.ParametroContext parametro : ctx.parametros().parametro()) {
+                String tipoParametro = parametro.tipo().getText();
+                String nombreParametro = parametro.ID().getText();
+            
+                generador.emitir("param " + tipoParametro + " " + nombreParametro);
+            }
+        }
+    
+        // Cuerpo de la función
+        visit(ctx.bloque());
+    
+        generador.emitir("endfunc");
+        generador.emitir("");
+    
+        return null;
+    }
+    
+    // =========================================================
+    // SENTENCIA RETURN
+    // Ejemplos:
+    // return;
+    // return 5;
+    // return a + b;
+    // =========================================================
+    @Override
+    public String visitSentenciaReturn(MiLenguajeParser.SentenciaReturnContext ctx) {
+        if (ctx.expresion() != null) {
+            String valor = visit(ctx.expresion());
+            generador.emitir("return " + valor);
+        } else {
+            generador.emitir("return");
+        }
     
         return null;
     }
@@ -237,6 +288,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitExprAgrupada(MiLenguajeParser.ExprAgrupadaContext ctx) {
         return visit(ctx.expresion());
     }
+
 
     // =========================================================
     // EXPRESIONES ARITMÉTICAS
