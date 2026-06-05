@@ -123,4 +123,14 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
+        String nombre = ctx.ID().getText();
+        if (symbolTable.resolveFunction(nombre) == null) {
+            errores.add(new SemanticError(ctx.ID().getSymbol().getLine(), ctx.ID().getSymbol().getCharPositionInLine(),
+                    "Función '" + nombre + "' no declarada."));
+        }
+        return null;
+    }
+
 }
