@@ -209,6 +209,20 @@ public class App {
 
             generadorCodigo.imprimirCodigo();
 
+            System.out.println("\n=== FASE 5: OPTIMIZACION DE CODIGO ===");
+                    
+            List<String> codigoIntermedio = generadorCodigo.getCodigo();
+                    
+            // Elegir una optimización descomentando solo una línea:
+            OptimizadorIntermedio optimizador = new OptimizadorCodigoMuerto(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorSentenciasRedundantes(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorSimplificacionExpresiones(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorPropagacionConstantes(codigoIntermedio);
+                    
+            optimizador.optimizar();
+            optimizador.imprimirResumen();
+            optimizador.imprimirCodigoOptimizado();
+
             System.out.println("\n" + "=".repeat(65));
             System.out.println("  Compilacion exitosa.");
 
