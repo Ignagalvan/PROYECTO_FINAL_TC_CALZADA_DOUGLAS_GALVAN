@@ -212,7 +212,12 @@ public class App {
 
             generadorCodigo.imprimirCodigo();
 
-            System.out.println("\n  ✅ Código intermedio generado correctamente.");
+            String archivoCodigoIntermedio = args[0].replace(".txt", "_codigo_intermedio.txt")
+                    .replace(".cpp", "_codigo_intermedio.txt");
+
+            generadorCodigo.guardarCodigo(archivoCodigoIntermedio);
+
+            System.out.println("\n  ✅ Código intermedio guardado en: " + archivoCodigoIntermedio);
 
             System.out.println("\n=== RESUMEN DE COMPILACIÓN ===");
 
@@ -221,6 +226,7 @@ public class App {
             System.out.println("  ✅ Errores léxicos: 0");
             System.out.println("  ✅ Errores sintácticos: 0");
             System.out.println("  ✅ Errores semánticos: 0");
+            System.out.println("  📄 Archivo código intermedio: " + archivoCodigoIntermedio);
 
             System.out.println("\n🎉 ¡COMPILACIÓN EXITOSA! 🎉");
 
