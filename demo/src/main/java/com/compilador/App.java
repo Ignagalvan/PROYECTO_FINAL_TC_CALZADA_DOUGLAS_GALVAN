@@ -221,6 +221,31 @@ public class App {
 
             System.out.println("\n  ✅ Código intermedio guardado en: " + archivoCodigoIntermedio);
 
+            System.out.println("\n=== 5. OPTIMIZACIÓN DE CÓDIGO ===\n");
+
+            List<String> codigoIntermedio = generadorCodigo.getCodigo();
+
+            // Elegir una optimización descomentando solo una línea:
+            OptimizadorIntermedio optimizador = new OptimizadorCodigoMuerto(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorSentenciasRedundantes(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorSimplificacionExpresiones(codigoIntermedio);
+            // OptimizadorIntermedio optimizador = new OptimizadorPropagacionConstantes(codigoIntermedio);
+
+            List<String> codigoOptimizado = optimizador.optimizar();
+            optimizador.imprimirResumen();
+            optimizador.imprimirCodigoOptimizado();
+
+            String archivoCodigoOptimizado = args[0].replace(".txt", "_codigo_optimizado.txt")
+                    .replace(".cpp", "_codigo_optimizado.txt");
+
+            try (java.io.PrintWriter writer = new java.io.PrintWriter(archivoCodigoOptimizado)) {
+                for (String linea : codigoOptimizado) {
+                    writer.println(linea);
+                }
+            }
+
+            System.out.println("\n  ✅ Código optimizado guardado en: " + archivoCodigoOptimizado);
+
             System.out.println("\n=== RESUMEN DE COMPILACIÓN ===");
 
             System.out.println("  📁 Archivo procesado: " + args[0]);
@@ -229,6 +254,7 @@ public class App {
             System.out.println("  ✅ Errores sintácticos: 0");
             System.out.println("  ✅ Errores semánticos: 0");
             System.out.println("  📄 Archivo código intermedio: " + archivoCodigoIntermedio);
+            System.out.println("  📄 Archivo código optimizado: " + archivoCodigoOptimizado);
 
             System.out.println("\n🎉 ¡COMPILACIÓN EXITOSA! 🎉");
 
