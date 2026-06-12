@@ -28,8 +28,10 @@ import com.compilador.semantico.SemanticWarning;
 public class App {
 
     public static void main(String[] args) {
+        SalidaCompilador reporte = new SalidaCompilador();
+
         if (args.length != 1) {
-            System.out.println("Uso: java -jar demo-1.0-jar-with-dependencies.jar <archivo.txt>");
+            reporte.error("Uso: java -jar demo-1.0-jar-with-dependencies.jar <archivo.txt>");
             System.exit(1);
         }
 
@@ -97,15 +99,15 @@ public class App {
 
             // Si hubo errores léxicos, reportar y detener
             if (!erroresLexicos.isEmpty()) {
-                System.out.println("\n ERRORES LEXICOS:");
+                reporte.error("ERRORES LEXICOS:");
                 for (String error : erroresLexicos) {
-                    System.out.println(error);
+                    reporte.error(error);
                 }
-                System.out.println("\n El analisis no puede continuar con errores léxicos.");
+                reporte.error("El analisis no puede continuar con errores lexicos.");
                 return;
             }
 
-            System.out.println("\nAnalisis léxico completado sin errores.");
+            reporte.exito("Analisis lexico completado sin errores.");
             System.out.println("  📊 Tokens procesados: " + (tokens.getTokens().size() - 1));
 
             // =========================================================
@@ -162,9 +164,9 @@ public class App {
 
             // Verificar si hubo errores
             if (!erroresSintacticos.isEmpty()) {
-                System.out.println("ERRORES SINTACTICOS:");
+                reporte.error("ERRORES SINTACTICOS:");
                 for (String error : erroresSintacticos) {
-                    System.out.println(error);
+                    reporte.error(error);
                 }
                 System.out.println();
                 System.out.println("  Pista: revisa que cada sentencia:");
@@ -174,7 +176,7 @@ public class App {
                 return;
             }
 
-            System.out.println("Analisis sintactico completado sin errores.");
+            reporte.exito("Analisis sintactico completado sin errores.");
 
             System.out.println("\n=== 3. ANÁLISIS SEMÁNTICO ===\n");
 
@@ -185,23 +187,23 @@ public class App {
             symbolTable.imprimirTabla();
 
             if (!semanticAnalyzer.getWarnings().isEmpty()) {
-                System.out.println("WARNINGS SEMANTICOS:");
+                reporte.warning("WARNINGS SEMANTICOS:");
                 for (SemanticWarning warning : semanticAnalyzer.getWarnings()) {
-                    System.out.println("  " + warning);
+                    reporte.warning(warning.toString());
                 }
                 System.out.println();
             }
 
             if (semanticAnalyzer.hayErrores()) {
-                System.out.println("ERRORES SEMÁNTICOS:");
+                reporte.error("ERRORES SEMANTICOS:");
                 for (SemanticError error : semanticAnalyzer.getErrores()) {
-                    System.out.println("  " + error);
+                    reporte.error(error.toString());
                 }
-                System.out.println("\n  El analisis no puede continuar con errores semanticos.");
+                reporte.error("El analisis no puede continuar con errores semanticos.");
                 return;
             }
 
-            System.out.println("Analisis semantico completado sin errores.");
+            reporte.exito("Analisis semantico completado sin errores.");
 
             System.out.println("\n=== 4. GENERACIÓN DE CÓDIGO INTERMEDIO ===\n");
 
@@ -256,7 +258,7 @@ public class App {
             System.out.println("  📄 Archivo código intermedio: " + archivoCodigoIntermedio);
             System.out.println("  📄 Archivo código optimizado: " + archivoCodigoOptimizado);
 
-            System.out.println("\n🎉 ¡COMPILACIÓN EXITOSA! 🎉");
+            reporte.exito("COMPILACION EXITOSA");
 
             // =========================================================
             // VISUALIZADOR GRÁFICO (Swing)
@@ -273,9 +275,9 @@ public class App {
             mostrarArbol(arbolParseo, parser);
 
         } catch (IOException e) {
-            System.err.println("No se pudo leer el archivo: " + e.getMessage());
+            reporte.error("No se pudo leer el archivo: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error inesperado: " + e.getMessage());
+            reporte.error("Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
 
