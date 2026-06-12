@@ -25,14 +25,16 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         String nombreVariable = ctx.ID().getText();
 
         // Si la declaración tiene inicialización, generamos código.
-        if (ctx.expresion() != null) {
-            String valor = visit(ctx.expresion());
-            generador.emitir(nombreVariable + " = " + valor);
+        if (ctx.CA() != null) {
+            String tamanio = ctx.INTEGER().getText();
+            generador.emitir(
+                    "declare " + ctx.tipo().getText() + " " +
+                            nombreVariable + "[" + tamanio + "]");
         } else {
-            // Para declaraciones sin valor inicial, dejamos una instrucción clara.
-            generador.emitir("declare " + ctx.tipo().getText() + " " + nombreVariable);
+            generador.emitir(
+                    "declare " + ctx.tipo().getText() + " " +
+                            nombreVariable);
         }
-
         return null;
     }
 
@@ -226,29 +228,29 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     @Override
     public String visitFuncion(MiLenguajeParser.FuncionContext ctx) {
         String nombreFuncion = ctx.ID().getText();
-    
+
         generador.emitir("");
         generador.emitir("func " + nombreFuncion + ":");
-    
+
         // Parámetros de la función, si existen
         if (ctx.parametros() != null) {
             for (MiLenguajeParser.ParametroContext parametro : ctx.parametros().parametro()) {
                 String tipoParametro = parametro.tipo().getText();
                 String nombreParametro = parametro.ID().getText();
-            
+
                 generador.emitir("param " + tipoParametro + " " + nombreParametro);
             }
         }
-    
+
         // Cuerpo de la función
         visit(ctx.bloque());
-    
+
         generador.emitir("endfunc");
         generador.emitir("");
-    
+
         return null;
     }
-    
+
     // =========================================================
     // SENTENCIA RETURN
     // Ejemplos:
@@ -264,7 +266,7 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
         } else {
             generador.emitir("return");
         }
-    
+
         return null;
     }
 
@@ -355,15 +357,22 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     // t0 = call obtenerCinco
     // x = t0
     // =========================================================
-    @Override
-    public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
-        String nombreFuncion = ctx.ID().getText();
+@Override
+public String visitLlamadaFuncion(MiLenguajeParser.LlamadaFuncionContext ctx) {
+    String nombreFuncion = ctx.ID().getText();
 
-        String temporal = generador.nuevaTemporal();
-        generador.emitir(temporal + " = call " + nombreFuncion);
-
-        return temporal;
+    if (ctx.argumentos() != null) {
+        for (MiLenguajeParser.ExpresionContext argumento : ctx.argumentos().expresion()) {
+            String valorArgumento = visit(argumento);
+            generador.emitir("param " + valorArgumento);
+        }
     }
+
+    String temporal = generador.nuevaTemporal();
+    generador.emitir(temporal + " = call " + nombreFuncion);
+
+    return temporal;
+}
 
     // =========================================================
     // EXPRESIONES LITERALES Y VARIABLES
@@ -409,7 +418,6 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
     public String visitExprAgrupada(MiLenguajeParser.ExprAgrupadaContext ctx) {
         return visit(ctx.expresion());
     }
-
 
     // =========================================================
     // EXPRESIONES ARITMÉTICAS

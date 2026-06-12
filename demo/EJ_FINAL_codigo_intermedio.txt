@@ -18,7 +18,7 @@ endfunc
 func main:
 declare int estado
 declare int temp
-declare int numeros
+declare int numeros[3]
 contadorGlobal = 0
 valorPi = 3.14
 inicial = 'M'
@@ -33,6 +33,8 @@ t4 = temp / 3
 temp = t4
 t5 = temp % 5
 temp = t5
+param temp
+param 5
 t6 = call sumar
 estado = t6
 contadorGlobal = estado
