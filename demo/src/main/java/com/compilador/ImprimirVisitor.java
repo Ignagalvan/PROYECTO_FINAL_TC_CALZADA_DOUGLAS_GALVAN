@@ -65,7 +65,7 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
         boolean tieneValor = ctx.expresion() != null;
 
         imprimir("DECLARACION → " + tipo + " " + nombre
-                 + (tieneValor ? " = ..." : " (sin valor inicial)"));
+            + (tieneValor ? " = ..." : " (sin valor inicial)"));
         if (tieneValor) {
             nivel++;
             visit(ctx.expresion());
@@ -82,7 +82,7 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
     // =========================================================
     @Override
     public String visitAsignacion(MiLenguajeParser.AsignacionContext ctx) {
-        imprimir("ASIGNACION → " + ctx.ID().getText() + " = ...");
+        imprimir("ASIGNACION → " + ctx.accesoVariable().getText() + " = ...");
         nivel++;
         visit(ctx.expresion());
         nivel--;
@@ -332,7 +332,7 @@ public class ImprimirVisitor extends MiLenguajeBaseVisitor<String> {
 
     @Override
     public String visitExprIdentificador(MiLenguajeParser.ExprIdentificadorContext ctx) {
-        imprimir("VARIABLE = " + ctx.ID().getText());
-        return ctx.ID().getText();
+        imprimir("VARIABLE = " + ctx.accesoVariable().getText());
+        return ctx.accesoVariable().getText();
     }
 }

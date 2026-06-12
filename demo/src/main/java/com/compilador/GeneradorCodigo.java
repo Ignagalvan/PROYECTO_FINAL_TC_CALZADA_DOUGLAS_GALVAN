@@ -3,6 +3,9 @@ package com.compilador;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.PrintWriter;
+import java.io.IOException;
+
 public class GeneradorCodigo {
 
     private final List<String> codigo = new ArrayList<>();
@@ -33,4 +36,14 @@ public class GeneradorCodigo {
             System.out.println(linea);
         }
     }
+
+    public void guardarCodigo(String nombreArchivo) throws IOException {
+
+    try (PrintWriter writer = new PrintWriter(nombreArchivo)) {
+
+        for (String linea : codigo) {
+            writer.println(linea);
+        }
+    }
+}
 }

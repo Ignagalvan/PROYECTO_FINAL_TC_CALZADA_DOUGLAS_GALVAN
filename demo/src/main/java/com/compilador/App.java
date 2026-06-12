@@ -36,7 +36,7 @@ public class App {
         try {
             // Cargar el archivo de texto como un stream de caracteres
             CharStream input = CharStreams.fromFileName(args[0]);
-            System.out.println("Analizando archivo: " + args[0]);
+            System.out.println("🚀 Iniciando compilación de: " + args[0]);
             System.out.println("=".repeat(65));
 
             // =========================================================
@@ -74,7 +74,7 @@ public class App {
             tokens.fill();
 
             // Mostrar tabla de tokens
-            System.out.println("\n=== FASE 1: ANALISIS LEXICO ===\n");
+            System.out.println("\n=== 1. ANÁLISIS LÉXICO ===\n");
             System.out.printf("  %-20s %-25s %-8s %-8s%n",
                     "TIPO DE TOKEN", "LEXEMA", "LINEA", "COLUMNA");
             System.out.println("  " + "-".repeat(63));
@@ -106,6 +106,7 @@ public class App {
             }
 
             System.out.println("\nAnalisis léxico completado sin errores.");
+            System.out.println("  📊 Tokens procesados: " + (tokens.getTokens().size() - 1));
 
             // =========================================================
             // FASE 2: ANÁLISIS SINTÁCTICO (PARSING)
@@ -129,7 +130,7 @@ public class App {
             // exprEntero: 3
             // =========================================================
 
-            System.out.println("\n=== FASE 2: ANALISIS SINTACTICO ===\n");
+            System.out.println("\n===  2. ANÁLISIS SINTÁCTICO ===\n");
 
             // El parser necesita leer los tokens desde el principio.
             // reset() rebobina el stream al token 0.
@@ -175,11 +176,13 @@ public class App {
 
             System.out.println("Analisis sintactico completado sin errores.");
 
-            System.out.println("\n=== FASE 3: ANALISIS SEMANTICO ===\n");
+            System.out.println("\n=== 3. ANÁLISIS SEMÁNTICO ===\n");
 
             SymbolTable symbolTable = new SymbolTable();
             SemanticAnalyzerVisitor semanticAnalyzer = new SemanticAnalyzerVisitor(symbolTable);
             semanticAnalyzer.visit(arbolParseo);
+
+            symbolTable.imprimirTabla();
 
             if (!semanticAnalyzer.getWarnings().isEmpty()) {
                 System.out.println("WARNINGS SEMANTICOS:");
@@ -200,31 +203,60 @@ public class App {
 
             System.out.println("Analisis semantico completado sin errores.");
 
-            System.out.println("\n=== FASE 4: GENERACION DE CODIGO INTERMEDIO ===");
+            System.out.println("\n=== 4. GENERACIÓN DE CÓDIGO INTERMEDIO ===\n");
 
             GeneradorCodigo generadorCodigo = new GeneradorCodigo();
             CodigoVisitor codigoVisitor = new CodigoVisitor(generadorCodigo);
 
             codigoVisitor.visit(arbolParseo);
 
+            System.out.println("  📝 Código de tres direcciones generado:\n");
+
             generadorCodigo.imprimirCodigo();
 
-            System.out.println("\n=== FASE 5: OPTIMIZACION DE CODIGO ===");
-                    
+            String archivoCodigoIntermedio = args[0].replace(".txt", "_codigo_intermedio.txt")
+                    .replace(".cpp", "_codigo_intermedio.txt");
+
+            generadorCodigo.guardarCodigo(archivoCodigoIntermedio);
+
+            System.out.println("\n  ✅ Código intermedio guardado en: " + archivoCodigoIntermedio);
+
+            System.out.println("\n=== 5. OPTIMIZACIÓN DE CÓDIGO ===\n");
+
             List<String> codigoIntermedio = generadorCodigo.getCodigo();
-                    
+
             // Elegir una optimización descomentando solo una línea:
             OptimizadorIntermedio optimizador = new OptimizadorCodigoMuerto(codigoIntermedio);
             // OptimizadorIntermedio optimizador = new OptimizadorSentenciasRedundantes(codigoIntermedio);
             // OptimizadorIntermedio optimizador = new OptimizadorSimplificacionExpresiones(codigoIntermedio);
             // OptimizadorIntermedio optimizador = new OptimizadorPropagacionConstantes(codigoIntermedio);
-                    
-            optimizador.optimizar();
+
+            List<String> codigoOptimizado = optimizador.optimizar();
             optimizador.imprimirResumen();
             optimizador.imprimirCodigoOptimizado();
 
-            System.out.println("\n" + "=".repeat(65));
-            System.out.println("  Compilacion exitosa.");
+            String archivoCodigoOptimizado = args[0].replace(".txt", "_codigo_optimizado.txt")
+                    .replace(".cpp", "_codigo_optimizado.txt");
+
+            try (java.io.PrintWriter writer = new java.io.PrintWriter(archivoCodigoOptimizado)) {
+                for (String linea : codigoOptimizado) {
+                    writer.println(linea);
+                }
+            }
+
+            System.out.println("\n  ✅ Código optimizado guardado en: " + archivoCodigoOptimizado);
+
+            System.out.println("\n=== RESUMEN DE COMPILACIÓN ===");
+
+            System.out.println("  📁 Archivo procesado: " + args[0]);
+            System.out.println("  🔤 Tokens analizados: " + (tokens.getTokens().size() - 1));
+            System.out.println("  ✅ Errores léxicos: 0");
+            System.out.println("  ✅ Errores sintácticos: 0");
+            System.out.println("  ✅ Errores semánticos: 0");
+            System.out.println("  📄 Archivo código intermedio: " + archivoCodigoIntermedio);
+            System.out.println("  📄 Archivo código optimizado: " + archivoCodigoOptimizado);
+
+            System.out.println("\n🎉 ¡COMPILACIÓN EXITOSA! 🎉");
 
             // =========================================================
             // VISUALIZADOR GRÁFICO (Swing)
@@ -246,6 +278,7 @@ public class App {
             System.err.println("Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
+
     }
 
     // =========================================================

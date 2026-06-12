@@ -77,7 +77,7 @@ sentencia
 //   int x = 5;       <- con valor inicial
 //   float pi = 3.14;
 declaracion
-    : tipo ID (IGUAL expresion)? PYC
+    : tipo ID (CA INTEGER CC)? (IGUAL expresion)? PYC
     ;
 
 // TIPOS DE DATOS disponibles en el mini lenguaje
@@ -95,7 +95,11 @@ tipo
 // ATENCIÓN: el parser distingue declaración de asignación
 // porque la declaración empieza con un TIPO y esta con un ID.
 asignacion
-    : ID IGUAL expresion PYC
+    : accesoVariable IGUAL expresion PYC
+    ;
+
+accesoVariable
+    : ID (CA expresion CC)?
     ;
 
 // LLAMADA A FUNCION SIN PARAMETROS
@@ -103,8 +107,14 @@ asignacion
 //   saludar();
 //   suma();
 llamadaFuncion
-    : ID PA PC
+    : ID PA argumentos? PC
     ;
+
+argumentos
+    : expresion (COMA expresion)*
+    ;
+
+
 
 // COUT: salida por pantalla
 // Sintaxis: cout << expresión ;
@@ -258,10 +268,9 @@ expresion
     | VERDADERO                                                           # exprVerdadero
     | FALSO                                                               # exprFalso
 
-    // Variable: referencia a un identificador declarado
-    | ID                                                                  # exprIdentificador
+   // Variable o acceso a array
+    | accesoVariable # exprIdentificador
     ;
-
 
 // =====================================================================
 //  REGLAS DEL LEXER (Análisis Léxico)
