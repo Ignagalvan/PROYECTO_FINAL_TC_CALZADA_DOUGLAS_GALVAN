@@ -57,4 +57,20 @@ public class SymbolTable {
     public Scope getCurrentScope() {
         return currentScope;
     }
+
+    public void imprimirTabla() {
+    System.out.println("\n=== TABLA DE SIMBOLOS ===");
+    System.out.printf("%-20s %-12s %-12s %-10s%n", "NOMBRE", "TIPO", "CATEGORIA", "AMBITO");
+    System.out.println("----------------------------------------------------------");
+
+    for (Symbol symbol : globalScope.getSymbols()) {
+        System.out.printf(
+                "%-20s %-12s %-12s %-10s%n",
+                symbol.getName(),
+                symbol.getType(),
+                symbol.getKind().name().toLowerCase(),
+                "global"
+        );
+    }
+}
 }

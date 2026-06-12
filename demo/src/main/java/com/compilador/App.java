@@ -182,6 +182,8 @@ public class App {
             SemanticAnalyzerVisitor semanticAnalyzer = new SemanticAnalyzerVisitor(symbolTable);
             semanticAnalyzer.visit(arbolParseo);
 
+            symbolTable.imprimirTabla();
+
             if (!semanticAnalyzer.getWarnings().isEmpty()) {
                 System.out.println("WARNINGS SEMANTICOS:");
                 for (SemanticWarning warning : semanticAnalyzer.getWarnings()) {
