@@ -227,15 +227,19 @@ public class App {
 
             List<String> codigoIntermedio = generadorCodigo.getCodigo();
 
-            // Elegir una optimización descomentando solo una línea:
-            OptimizadorIntermedio optimizador = new OptimizadorCodigoMuerto(codigoIntermedio);
-            // OptimizadorIntermedio optimizador = new OptimizadorSentenciasRedundantes(codigoIntermedio);
-            // OptimizadorIntermedio optimizador = new OptimizadorSimplificacionExpresiones(codigoIntermedio);
-            // OptimizadorIntermedio optimizador = new OptimizadorPropagacionConstantes(codigoIntermedio);
+            List<String> codigoOptimizado = new ArrayList<>(codigoIntermedio);
 
-            List<String> codigoOptimizado = optimizador.optimizar();
-            optimizador.imprimirResumen();
-            optimizador.imprimirCodigoOptimizado();
+            // Se puede dejar una sola linea activa o descomentar las cuatro.
+            codigoOptimizado = aplicarOptimizacion(
+                    new OptimizadorCodigoMuerto(codigoOptimizado));
+             codigoOptimizado = aplicarOptimizacion(
+                     new OptimizadorSentenciasRedundantes(codigoOptimizado));
+            // codigoOptimizado = aplicarOptimizacion(
+            //         new OptimizadorPropagacionConstantes(codigoOptimizado));
+            // codigoOptimizado = aplicarOptimizacion(
+            //         new OptimizadorSimplificacionExpresiones(codigoOptimizado));
+
+            imprimirCodigoOptimizado(codigoOptimizado);
 
             String archivoCodigoOptimizado = args[0].replace(".txt", "_codigo_optimizado.txt")
                     .replace(".cpp", "_codigo_optimizado.txt");
@@ -298,5 +302,19 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
         frame.setVisible(true);
+    }
+
+    private static List<String> aplicarOptimizacion(
+            OptimizadorIntermedio optimizador) {
+        List<String> resultado = optimizador.optimizar();
+        optimizador.imprimirResumen();
+        return resultado;
+    }
+
+    private static void imprimirCodigoOptimizado(List<String> codigo) {
+        System.out.println("\n=== CODIGO OPTIMIZADO ===\n");
+        for (String linea : codigo) {
+            System.out.println(linea);
+        }
     }
 }

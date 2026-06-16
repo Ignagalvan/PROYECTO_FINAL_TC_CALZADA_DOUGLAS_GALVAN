@@ -35,6 +35,12 @@ public class CodigoVisitor extends MiLenguajeBaseVisitor<String> {
                     "declare " + ctx.tipo().getText() + " " +
                             nombreVariable);
         }
+
+        if (ctx.expresion() != null) {
+            String valorInicial = visit(ctx.expresion());
+            generador.emitir(nombreVariable + " = " + valorInicial);
+        }
+
         return null;
     }
 

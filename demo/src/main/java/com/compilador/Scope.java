@@ -9,10 +9,16 @@ public class Scope {
     private final Scope parent;
     private final Map<String, Symbol> symbols = new LinkedHashMap<>();
     private final int level;
+    private final String name;
 
     public Scope(Scope parent) {
+        this(parent, parent == null ? "global" : parent.getName());
+    }
+
+    public Scope(Scope parent, String name) {
         this.parent = parent;
         this.level = parent == null ? 0 : parent.getLevel() + 1;
+        this.name = name;
     }
 
     public boolean declare(Symbol symbol) {
@@ -47,6 +53,10 @@ public class Scope {
 
     public int getLevel() {
         return level;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Collection<Symbol> getSymbols() {

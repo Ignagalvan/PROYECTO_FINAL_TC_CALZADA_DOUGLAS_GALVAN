@@ -1,23 +1,53 @@
 package com.compilador;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.List;
+
 public class SymbolTable {
 
     private final Scope globalScope;
+    private final List<Scope> scopes = new ArrayList<>();
     private Scope currentScope;
 
     public SymbolTable() {
         this.globalScope = new Scope(null);
         this.currentScope = globalScope;
+        scopes.add(globalScope);
     }
 
     public boolean declareVariable(String name, String type) {
-        Symbol symbol = Symbol.variable(name, type, currentScope.getLevel());
+        return declareVariable(name, type, -1, -1, null);
+    }
+
+    public boolean declareVariable(
+            String name, String type, int line, int column, Integer arraySize) {
+        Symbol symbol = Symbol.variable(name, type, currentScope.getLevel(),
+                line, column, currentScope.getName(), arraySize);
         return currentScope.declare(symbol);
     }
 
     public boolean declareFunction(String name, String returnType) {
-        Symbol symbol = Symbol.function(name, returnType, globalScope.getLevel());
+        return declareFunction(name, returnType, -1, -1, Collections.emptyList());
+    }
+
+    public boolean declareFunction(
+            String name, String returnType, int line, int column,
+            List<String> parameterTypes) {
+        Symbol symbol = Symbol.function(name, returnType, globalScope.getLevel(),
+                line, column, parameterTypes);
         return globalScope.declare(symbol);
+    }
+
+    public boolean declareParameter(String name, String type) {
+        return declareParameter(name, type, -1, -1);
+    }
+
+    public boolean declareParameter(String name, String type, int line, int column) {
+        Symbol symbol = Symbol.parameter(name, type, currentScope.getLevel(),
+                line, column, currentScope.getName());
+        return currentScope.declare(symbol);
     }
 
     public Symbol resolve(String name) {
@@ -36,6 +66,12 @@ public class SymbolTable {
 
     public void enterScope() {
         currentScope = new Scope(currentScope);
+        scopes.add(currentScope);
+    }
+
+    public void enterScope(String name) {
+        currentScope = new Scope(currentScope, name);
+        scopes.add(currentScope);
     }
 
     public void exitScope() {
@@ -58,19 +94,65 @@ public class SymbolTable {
         return currentScope;
     }
 
-    public void imprimirTabla() {
-    System.out.println("\n=== TABLA DE SIMBOLOS ===");
-    System.out.printf("%-20s %-12s %-12s %-10s%n", "NOMBRE", "TIPO", "CATEGORIA", "AMBITO");
-    System.out.println("----------------------------------------------------------");
-
-    for (Symbol symbol : globalScope.getSymbols()) {
-        System.out.printf(
-                "%-20s %-12s %-12s %-10s%n",
-                symbol.getName(),
-                symbol.getType(),
-                symbol.getKind().name().toLowerCase(),
-                "global"
-        );
+    public List<Scope> getScopes() {
+        return Collections.unmodifiableList(scopes);
     }
-}
+
+    public void imprimirTabla() {
+        List<Symbol> symbols = new ArrayList<>();
+        for (Scope scope : scopes) {
+            symbols.addAll(scope.getSymbols());
+        }
+        symbols.sort(Comparator
+                .comparingInt(Symbol::getLine)
+                .thenComparingInt(Symbol::getColumn));
+
+        System.out.println("\n=== TABLA DE SÍMBOLOS ===");
+        System.out.printf("%-16s %-10s %-15s %-10s %-10s %-15s %s%n",
+                "NOMBRE", "TIPO", "CATEGORÍA", "LÍNEA", "COLUMNA",
+                "ÁMBITO", "DETALLES");
+        System.out.println("--------------------------------------------------------------------------------------------");
+
+        for (Symbol symbol : symbols) {
+            System.out.printf("%-16s %-10s %-15s %-10d %-10d %-15s %s%n",
+                    symbol.getName(),
+                    symbol.getType(),
+                    categoryName(symbol),
+                    symbol.getLine(),
+                    symbol.getColumn(),
+                    symbol.getScopeName(),
+                    details(symbol));
+        }
+    }
+
+    private String categoryName(Symbol symbol) {
+        switch (symbol.getKind()) {
+            case FUNCTION:
+                return "funcion";
+            case PARAMETER:
+                return "parametro";
+            default:
+                return "variable";
+        }
+    }
+
+    private String details(Symbol symbol) {
+        if (symbol.getKind() == Symbol.Kind.PARAMETER) {
+            return "";
+        }
+
+        StringBuilder details = new StringBuilder();
+        if (symbol.getArraySize() != null) {
+            details.append("[arr:").append(symbol.getArraySize()).append("] ");
+        }
+        details.append("[private]");
+
+        if (symbol.getKind() == Symbol.Kind.FUNCTION
+                && !symbol.getParameterTypes().isEmpty()) {
+            details.append(" [")
+                    .append(String.join(", ", symbol.getParameterTypes()))
+                    .append("]");
+        }
+        return details.toString();
+    }
 }
