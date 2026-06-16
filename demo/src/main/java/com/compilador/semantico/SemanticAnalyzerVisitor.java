@@ -39,8 +39,17 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     public Void visitDeclaracion(MiLenguajeParser.DeclaracionContext ctx) {
         String nombre = ctx.ID().getText();
         String tipo = ctx.tipo().getText();
+        Integer arraySize = null;
+        if (ctx.CA() != null) {
+            arraySize = Integer.parseInt(ctx.INTEGER().getText());
+        }
 
-        if (!symbolTable.declareVariable(nombre, tipo)) {
+        if (!symbolTable.declareVariable(
+                nombre,
+                tipo,
+                ctx.ID().getSymbol().getLine(),
+                ctx.ID().getSymbol().getCharPositionInLine(),
+                arraySize)) {
             errores.add(new SemanticError(
                     ctx.ID().getSymbol().getLine(),
                     ctx.ID().getSymbol().getCharPositionInLine(),
@@ -111,7 +120,7 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     @Override
     public Void visitFuncion(MiLenguajeParser.FuncionContext ctx) {
         nivelFunciones++;
-        symbolTable.enterScope();
+        symbolTable.enterScope(ctx.ID().getText());
 
         if (ctx.parametros() != null) {
             for (MiLenguajeParser.ParametroContext parametro : ctx.parametros().parametro()) {
@@ -213,8 +222,20 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
     private void declararFuncion(MiLenguajeParser.FuncionContext ctx) {
         String nombre = ctx.ID().getText();
         String tipoRetorno = ctx.tipo().getText();
+        List<String> tiposParametros = new ArrayList<>();
+        if (ctx.parametros() != null) {
+            for (MiLenguajeParser.ParametroContext parametro
+                    : ctx.parametros().parametro()) {
+                tiposParametros.add(parametro.tipo().getText());
+            }
+        }
 
-        if (!symbolTable.declareFunction(nombre, tipoRetorno)) {
+        if (!symbolTable.declareFunction(
+                nombre,
+                tipoRetorno,
+                ctx.ID().getSymbol().getLine(),
+                ctx.ID().getSymbol().getCharPositionInLine(),
+                tiposParametros)) {
             errores.add(new SemanticError(
                     ctx.ID().getSymbol().getLine(),
                     ctx.ID().getSymbol().getCharPositionInLine(),
@@ -226,7 +247,11 @@ public class SemanticAnalyzerVisitor extends MiLenguajeBaseVisitor<Void> {
         String nombre = ctx.ID().getText();
         String tipo = ctx.tipo().getText();
 
-        if (!symbolTable.declareVariable(nombre, tipo)) {
+        if (!symbolTable.declareParameter(
+                nombre,
+                tipo,
+                ctx.ID().getSymbol().getLine(),
+                ctx.ID().getSymbol().getCharPositionInLine())) {
             errores.add(new SemanticError(
                     ctx.ID().getSymbol().getLine(),
                     ctx.ID().getSymbol().getCharPositionInLine(),

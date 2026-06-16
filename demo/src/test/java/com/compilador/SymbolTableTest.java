@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import org.junit.Test;
 
 public class SymbolTableTest {
@@ -67,6 +68,20 @@ public class SymbolTableTest {
         table.enterScope();
 
         assertNotNull(table.resolveFunction("saludar"));
+    }
+
+    @Test
+    public void retainsSymbolsFromExitedScopes() {
+        SymbolTable table = new SymbolTable();
+        table.enterScope();
+        table.declareParameter("a", "int");
+        table.declareVariable("resultado", "int");
+        table.exitScope();
+
+        Collection<Symbol> localSymbols = table.getScopes().get(1).getSymbols();
+
+        assertEquals(2, localSymbols.size());
+        assertEquals(Symbol.Kind.PARAMETER, localSymbols.iterator().next().getKind());
     }
 
     @Test

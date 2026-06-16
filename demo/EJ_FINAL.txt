@@ -2,10 +2,11 @@
 // Compatible con la gramática básica
 
 // Variables globales
-int contadorGlobal;
+int contadorGlobal = 19;
 double valorPi;
 char inicial;
 bool activo;
+
 
 // Función simple que retorna valor
 int sumar(int a, int b) {
@@ -13,6 +14,8 @@ int sumar(int a, int b) {
     resultado = a + b;
     contadorGlobal = contadorGlobal + 1;
     return resultado;
+    int muerto ;
+    muerto = 1;
 }
 
 // Función main

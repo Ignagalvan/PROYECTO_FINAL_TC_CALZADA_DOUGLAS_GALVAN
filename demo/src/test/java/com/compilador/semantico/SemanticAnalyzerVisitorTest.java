@@ -21,6 +21,13 @@ public class SemanticAnalyzerVisitorTest {
     }
 
     @Test
+    public void acceptsVariableDeclarationWithInitializer() {
+        List<SemanticError> errores = analizar("int x = 1;");
+
+        assertTrue(errores.isEmpty());
+    }
+
+    @Test
     public void reportsDuplicatedVariableInSameScope() {
         List<SemanticError> errores = analizar("int x; int x;");
 
